@@ -4,15 +4,16 @@ angular.module('kanbanApp', [
   'ngCookies',
   'ngResource',
   'ngSanitize',
-  'ngRoute'
+  'ngRoute',
+  'uuid4'
 ])
-  .config(function ($routeProvider) {
+  .config(function($routeProvider) {
     $routeProvider
-      .when('/', {
-        templateUrl: 'views/main.html',
-        controller: 'MainCtrl'
+      .when('/kanban', {
+        templateUrl: '/views/kanban.html',
+        controller: 'kanbanCtrl'
       })
       .otherwise({
-        redirectTo: '/'
+        redirectTo: '/kanban'
       });
   });
