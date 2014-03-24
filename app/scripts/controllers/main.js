@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('kanbanApp').controller('kanbanCtrl', ['$scope', '$log', 'preferenceService', 'projectService', 'kanbanService', function($scope, $log, preferenceService, projectService, kanbanService) {
+angular.module('kanbanApp').controller('kanbanCtrl', ['$scope', '$log', '$modal', 'preferenceService', 'projectService', 'kanbanService', function($scope, $log, $modal, preferenceService, projectService, kanbanService) {
   
   var updateViewModelProject = function(result) {
     $log.info('updateViewModelProject');
@@ -10,6 +10,43 @@ angular.module('kanbanApp').controller('kanbanCtrl', ['$scope', '$log', 'prefere
   var updateViewModelCards = function(results) {
     $log.info('updateViewModelCards');
     $scope.cards = results;
+  };
+  
+  $scope.createProject = function() {
+    $log.info('createProject');
+  };
+  
+  $scope.editProject = function(project) {
+    $log.info('editProject: ' + JSON.stringify(project));
+  };
+  
+  $scope.switchProject = function() {
+    $log.info('switchProject');
+  };
+  
+  $scope.createCard = function() {
+    $log.info('createCard');
+    var modalInstance;
+    
+    var modalCard = kanbanService.getCardTemplate('Backlog');
+    modalInstance = $modal.open({
+      templateUrl: '/views/carddetail.html',
+      controller: 'CardDetailCtrl',
+      resolve: {
+        card: function() {
+          return modalCard;
+        },
+        workflow: function() {
+          return ['Backlog', 'In Progress', 'Done'];
+        }
+      }
+    });
+    
+    modalInstance.result.then(
+      function() {
+        return kanbanService.getCards($scope.project);
+      }
+    ).then(updateViewModelCards);
   };
   
   preferenceService.getDefaultProjectId().then(
@@ -41,4 +78,36 @@ angular.module('kanbanApp').controller('kanbanCtrl', ['$scope', '$log', 'prefere
   );
   
   
+}]);
+
+angular.module('kanbanApp').controller('CardDetailCtrl', ['$scope', '$modalInstance', 'card', 'workflow',
+function($scope, $modalInstance, card, workflow) {
+  //
+  // on page load
+  //
+  $scope.card = card;
+  $scope.workflow = workflow;
+  
+  //
+  // view functions
+  //
+  
+  $scope.addTask = function() {
+    $scope.card.tasks.push($scope.card.newTask);
+    $scope.card.newTask = '';
+  };
+  
+  $scope.deleteTask = function(idx) {
+    $scope.card.tasks.splice(idx, 1);
+  };
+  
+  // save changes
+  $scope.save = function(card) {
+    $modalInstance.close(card);
+  };
+
+  // cancel changes
+  $scope.cancel = function() {
+    $modalInstance.dismiss('cancel');
+  };
 }]);

@@ -1,0 +1,54 @@
+<div class='modal-header'>
+  <h3>
+    Edit Card: {{card.name}}
+  </h3>
+</div>
+
+<div class='modal-body'>
+  <form name="cardForm" class="simple-form">
+  <tabset>
+    <tab>
+      <tab-heading>
+        <i class="glyphicon glyphicon-info-sign"></i> Card Details
+      </tab-heading>
+      <div>
+        <label>Name:</label> <input type='text' ng-model="card.name">
+      </div>
+      <div>
+        <label>Status:</label>
+        <select ng-model="card.status" ng-options="s for s in workflow">
+        </select>
+      </div>
+      <div>
+        <div>
+          <label>Story:</label>
+        </div><textarea placeholder="As a ... I want ... so that ..." ng-model="card.story"></textarea>
+      </div>
+      <div>
+        <div>
+          <label>Acceptance Criteria:</label>
+        </div><textarea placeholder="Given ... when ... then ..." ng-model="card.acceptance"></textarea>
+      </div>
+      <div>
+        <label>Points:</label> <input type='text' ng-model="card.points">
+      </div>
+    </tab>
+    
+    <tab>
+      <tab-heading>
+        <i class="glyphicon glyphicon-tasks"></i> Tasks
+      </tab-heading>
+      <ul>
+        <li ng-repeat="t in card.tasks">{{t}} <button ng-click="deleteTask($index)" class=""><i class="glyphicon glyphicon-remove"></i> Delete</button></li>
+      </ul>
+      <div>
+        <label>Task:</label> <input type='text' ng-model="card.newTask" /><button ng-click="addTask()" class=""><i class="glyphicon glyphicon-plus-sign"></i> Add</button>
+      </div>
+    </tab>
+  </tabset>
+  </form>
+</div>
+  
+<div class='modal-footer'>
+  <button class="btn btn-danger" ng-click="cancel()">Cancel</button> <button class="btn btn-primary" ng-click="save(card)">Save</button>
+</div>

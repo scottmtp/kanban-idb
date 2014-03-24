@@ -5,6 +5,9 @@ angular.module('kanbanApp', [
   'ngResource',
   'ngSanitize',
   'ngRoute',
+  'ui.bootstrap',
+  'ui.utils',
+  'dialogs',
   'uuid4'
 ])
   .config(function($routeProvider) {

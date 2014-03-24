@@ -1,6 +1,10 @@
 'use strict';
 
-angular.module('kanbanApp').service('kanbanService', ['dbService', function(dbService) {
+angular.module('kanbanApp').service('kanbanService', ['uuid4', 'dbService', function(uuid4, dbService) {
+  var getCardTemplate = function(initialStatus) {
+    var templateCard = {'id': uuid4.generate(), 'status': initialStatus, 'points': 0, 'tasks': [], 'newTask': ''};
+    return templateCard;
+  };
   
   var getCards = function(project) {
     return dbService.getAllCards(project);
@@ -15,6 +19,7 @@ angular.module('kanbanApp').service('kanbanService', ['dbService', function(dbSe
   };
   
   return {
+    getCardTemplate: getCardTemplate,
     getCards: getCards,
     saveCard: saveCard,
     deleteCard: deleteCard

@@ -1,11 +1,18 @@
 <div ng-include src="'/views/header.html'"></div>
 
-<div class="jumbotron">
-  <h4>Project: {{project.name}}</h4>
+<div>
+  <h3>Project: {{project.name}}</h3>
+  <button role='button' class='btn' ng-click="createProject()">Create</button>
+  <button role='button' class='btn' ng-click="editProject(project)">Edit</button>
+  <button role='button' class='btn' ng-click="switchProject()">Switch</button>
 </div>
 
 <div id="cards">
-  
+  <h3>Cards:</h3>
+  <ul>
+    <li ng-repeat="card in cards track by card.id"></li>
+  </ul>
+  <button role='button' class='btn' ng-click="createCard(project)">Create</button>
 </div>
 
 <div ng-include src="'/views/footer.html'"></div>
