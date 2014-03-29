@@ -77,3 +77,18 @@ body {
     border-bottom: 0;
   }
 }
+
+.card {
+  width: 150px;
+  border: 1px solid #ccc;
+  min-height: 100px;
+  margin: 4px;
+  padding: 8px;
+  cursor: pointer;
+}
+
+.cardHolder {
+  list-style-type: none;
+  margin: 0px;
+  padding: 0px;
+}

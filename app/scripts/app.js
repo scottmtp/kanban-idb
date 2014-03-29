@@ -8,7 +8,8 @@ angular.module('kanbanApp', [
   'ui.bootstrap',
   'ui.utils',
   'dialogs',
-  'uuid4'
+  'uuid4',
+  'htmlSortable'
 ])
   .config(function($routeProvider) {
     $routeProvider

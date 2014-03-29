@@ -9,8 +9,14 @@
 
 <div id="cards">
   <h3>Cards:</h3>
-  <ul>
-    <li ng-repeat="card in cards track by card.id"></li>
+  <ul class="cardHolder connected sortable grid" html-sortable="sortableOptions" ng-model="cards">
+    <li ng-repeat="card in cards track by card.id">
+      <div class="card">
+        <div><span class="cardTitle">{{card.name}}</span></div>
+        <div><span class="cardPoints">Points: {{card.points}}</span></div>
+        <div><span class="cardTaskCount">Tasks: {{card.tasks.length}}</span></div>
+      </div>
+    </li>
   </ul>
   <button role='button' class='btn' ng-click="createCard(project)">Create</button>
 </div>

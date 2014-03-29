@@ -3,29 +3,29 @@
 angular.module('kanbanApp').controller('kanbanCtrl', ['$scope', '$log', '$modal', 'preferenceService', 'projectService', 'kanbanService', function($scope, $log, $modal, preferenceService, projectService, kanbanService) {
   
   var updateViewModelProject = function(result) {
-    $log.info('updateViewModelProject');
+    $log.debug('updateViewModelProject');
     $scope.project = result;
   };
   
   var updateViewModelCards = function(results) {
-    $log.info('updateViewModelCards');
+    $log.debug('updateViewModelCards');
     $scope.cards = results;
   };
   
   $scope.createProject = function() {
-    $log.info('createProject');
+    $log.debug('createProject');
   };
   
   $scope.editProject = function(project) {
-    $log.info('editProject: ' + JSON.stringify(project));
+    $log.debug('editProject: ' + JSON.stringify(project));
   };
   
   $scope.switchProject = function() {
-    $log.info('switchProject');
+    $log.debug('switchProject');
   };
   
   $scope.createCard = function() {
-    $log.info('createCard');
+    $log.debug('createCard');
     var modalInstance;
     
     var modalCard = kanbanService.getCardTemplate('Backlog');
@@ -42,11 +42,14 @@ angular.module('kanbanApp').controller('kanbanCtrl', ['$scope', '$log', '$modal'
       }
     });
     
-    modalInstance.result.then(
-      function() {
+    modalInstance.result
+      .then(function(card) {
+        return kanbanService.saveCard($scope.project, card);
+      })
+      .then(function() {
         return kanbanService.getCards($scope.project);
-      }
-    ).then(updateViewModelCards);
+      })
+      .then(updateViewModelCards);
   };
   
   preferenceService.getDefaultProjectId().then(
