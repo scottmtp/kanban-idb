@@ -9,15 +9,23 @@
 
 <div id="cards">
   <h3>Cards:</h3>
-  <ul class="cardHolder connected sortable grid" html-sortable="sortableOptions" ng-model="cards">
-    <li ng-repeat="card in cards track by card.id">
-      <div class="card">
-        <div><span class="cardTitle">{{card.name}}</span></div>
-        <div><span class="cardPoints">Points: {{card.points}}</span></div>
-        <div><span class="cardTaskCount">Tasks: {{card.tasks.length}}</span></div>
-      </div>
-    </li>
-  </ul>
+  
+  <div id="columns" class="row">
+    <div class="workflowColumn col-md-4" ng-repeat="workflow in project.workflow">
+      <h4>{{workflow}}</h4>
+      <ul class="cardHolder connected sortable" html-sortable="{connectWith: '.connected'}" ng-model="cards">
+        <li ng-repeat="card in cards track by card.id" ng-if="card.status === workflow">
+          <div class="card">
+            <div><span class="cardTitle">{{card.name}}</span></div>
+            <div><span class="cardPoints">Points: {{card.points}}</span></div>
+            <div><span class="cardTaskCount">Tasks: {{card.tasks.length}}</span></div>
+            <button role="button" class="btn">Edit</button>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+  
   <button role='button' class='btn' ng-click="createCard(project)">Create</button>
 </div>
 

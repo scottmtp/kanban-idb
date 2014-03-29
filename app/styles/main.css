@@ -78,17 +78,63 @@ body {
   }
 }
 
+.workflowColumn {
+  min-height: 200px;
+}
+
+.sortable {
+	width: 310px;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}
+
+.sortable.grid {
+	overflow: hidden;
+}
+
+.sortable li {
+	list-style: none;
+	border: 1px solid #CCC;
+	background: #FFF;
+	color: black;
+	margin: 5px;
+	padding: 5px;
+  min-height: 80px;
+}
+
+.sortable.grid li {
+  float: left;
+	text-align: center;
+}
+
+.handle {
+	cursor: move;
+}
+
+.sortable.connected {
+	width: 200px;
+	min-height: 100px;
+	float: left;
+}
+
+li.disabled {
+	opacity: 0.5;
+}
+
+li.highlight {
+	background: #EEE;
+}
+
+li.sortable-placeholder {
+	border: 1px dashed #CCC;
+	background: none;
+}
+            
 .card {
-  width: 150px;
-  border: 1px solid #ccc;
-  min-height: 100px;
-  margin: 4px;
-  padding: 8px;
   cursor: pointer;
 }
 
 .cardHolder {
-  list-style-type: none;
-  margin: 0px;
-  padding: 0px;
 }
