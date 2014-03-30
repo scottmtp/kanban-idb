@@ -208,8 +208,6 @@ angular.module('kanbanApp').service('dbService', ['$log', '$q', '$rootScope',
     };
 
     var updateCard = function(project, obj) {
-      $log.info('project: ' + JSON.stringify(project));
-      $log.info('obj: ' + JSON.stringify(obj));
       return updateObject(selectProject(project.dbname), 'card', obj);
     };
 

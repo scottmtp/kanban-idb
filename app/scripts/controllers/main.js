@@ -1,40 +1,75 @@
+/*global $ */
+/*global _ */
 'use strict';
 
 angular.module('kanbanApp').controller('kanbanCtrl', ['$scope', '$log', '$modal', 'preferenceService', 'projectService', 'kanbanService', function($scope, $log, $modal, preferenceService, projectService, kanbanService) {
   
+  //
+  // private functions
+  //
   var updateViewModelProject = function(result) {
     $log.debug('updateViewModelProject');
     $scope.project = result;
   };
   
+  var getStatus = function(s) {
+    return s.replace(/ /g, '');
+  };
+  
   var updateViewModelCards = function(results) {
     $log.debug('updateViewModelCards');
-    $scope.cards = results;
+    $scope.cards = _.chain(results).sortBy('ordinal').groupBy('status').value();
+    $('.sortable').sortable($scope.sortableOptions);
+    
+    // remove default binding as it can't deal with our model
+    $('.sortable').sortable().unbind();
+    
+    // attach to update event
+    $('.sortable').sortable().bind('sortupdate', function(e, data) {
+      $log.info('update!');
+      var startWorkflow = $(data.startparent).attr('data-workflow');
+      var endWorkflow = $(data.endparent).attr('data-workflow');
+      
+      var $start = data.oldindex;
+      var $end   = data.item.index();
+    
+      if (startWorkflow === endWorkflow) {
+        var $items = $scope.cards[startWorkflow];
+        $items.splice($end, 0, $items.splice($start, 1)[0]);
+      }
+      else {
+        var $item = $scope.cards[startWorkflow][$start];
+        var $sourceItems = $scope.cards[startWorkflow];
+        var $destItems = $scope.cards[endWorkflow];
+        
+        if (typeof $destItems === 'undefined') {
+          $destItems = [];
+          $scope.cards[endWorkflow] = $destItems;
+        }
+        
+        $sourceItems.splice($start, 1);
+        $destItems.splice($end, 0, $item);
+      }
+      
+      for (var i = 0; i < $scope.cards[endWorkflow].length; i++) {
+        $scope.cards[endWorkflow][i].ordinal = i;
+        $scope.cards[endWorkflow][i].status = endWorkflow
+        kanbanService.saveCard($scope.project, $scope.cards[endWorkflow][i]);
+      }
+      
+    });
   };
   
-  $scope.createProject = function() {
-    $log.debug('createProject');
-  };
-  
-  $scope.editProject = function(project) {
-    $log.debug('editProject: ' + JSON.stringify(project));
-  };
-  
-  $scope.switchProject = function() {
-    $log.debug('switchProject');
-  };
-  
-  $scope.createCard = function() {
-    $log.debug('createCard');
+  var editCardImpl = function(aCard) {
+    $log.debug('editCard');
     var modalInstance;
     
-    var modalCard = kanbanService.getCardTemplate('Backlog');
     modalInstance = $modal.open({
       templateUrl: '/views/carddetail.html',
       controller: 'CardDetailCtrl',
       resolve: {
         card: function() {
-          return modalCard;
+          return aCard;
         },
         workflow: function() {
           return ['Backlog', 'In Progress', 'Done'];
@@ -52,6 +87,39 @@ angular.module('kanbanApp').controller('kanbanCtrl', ['$scope', '$log', '$modal'
       .then(updateViewModelCards);
   };
   
+  //
+  // scope
+  //
+  $scope.sortableOptions = {
+    connectWith: '.connected'
+  };
+  
+  $scope.createProject = function() {
+    $log.debug('createProject');
+  };
+  
+  $scope.editProject = function(project) {
+    $log.debug('editProject: ' + JSON.stringify(project));
+  };
+  
+  $scope.switchProject = function() {
+    $log.debug('switchProject');
+  };
+  
+  $scope.editCard = function(card) {
+    var modalCard = angular.copy(card);
+    editCardImpl(modalCard);
+  };
+  
+  $scope.createCard = function() {
+    $log.debug('createCard');
+    var modalCard = kanbanService.getCardTemplate('Backlog');
+    editCardImpl(modalCard);
+  };
+  
+  //
+  // page load
+  //
   preferenceService.getDefaultProjectId().then(
     function(results) {
       if (!!results) {
@@ -79,8 +147,6 @@ angular.module('kanbanApp').controller('kanbanCtrl', ['$scope', '$log', '$modal'
   ).then(
     updateViewModelCards
   );
-  
-  
 }]);
 
 angular.module('kanbanApp').controller('CardDetailCtrl', ['$scope', '$modalInstance', 'card', 'workflow',

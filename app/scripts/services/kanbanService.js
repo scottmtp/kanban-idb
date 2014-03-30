@@ -1,8 +1,9 @@
+/*global _ */
 'use strict';
 
 angular.module('kanbanApp').service('kanbanService', ['uuid4', 'dbService', function(uuid4, dbService) {
   var getCardTemplate = function(initialStatus) {
-    var templateCard = {'id': uuid4.generate(), 'status': initialStatus, 'points': 0, 'tasks': [], 'newTask': ''};
+    var templateCard = {'id': uuid4.generate(), ordinal: 0, 'status': initialStatus, 'points': 0, 'tasks': [], 'newTask': ''};
     return templateCard;
   };
   

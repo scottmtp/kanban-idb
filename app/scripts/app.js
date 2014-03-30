@@ -20,4 +20,6 @@ angular.module('kanbanApp', [
       .otherwise({
         redirectTo: '/kanban'
       });
+  }).run(function($rootScope) {
+    $rootScope._ = window._;
   });

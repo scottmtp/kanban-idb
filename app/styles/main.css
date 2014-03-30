@@ -79,6 +79,7 @@ body {
 }
 
 .workflowColumn {
+  background-color: #FFF;
   min-height: 200px;
 }
 
@@ -106,7 +107,7 @@ body {
 
 .sortable.grid li {
   float: left;
-	text-align: center;
+	text-align: left;
 }
 
 .handle {
@@ -114,7 +115,7 @@ body {
 }
 
 .sortable.connected {
-	width: 200px;
+	width: 250px;
 	min-height: 100px;
 	float: left;
 }
