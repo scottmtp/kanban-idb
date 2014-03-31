@@ -16,10 +16,10 @@
       <ul class="cardHolder connected sortable" data-workflow="{{workflow}}" html-sortable="sortableOptions" ng-model="cards[workflow]">
         <li ng-repeat="card in cards[workflow] track by card.id">
           <div class="card">
-            <div><span class="cardTitle">{{card.name}}</span></div>
+            <div><h5><span class="cardTitle">{{card.name}}</span></h5></div>
+            <div><span class="cardStory">Story: {{card.story}}</span></div>
             <div><span class="cardPoints">Points: {{card.points}}</span></div>
             <div><span class="cardTaskCount">Tasks: {{card.tasks.length}}</span></div>
-            <div><span class="cardTaskCount">Ord: {{card.ordinal}}</span></div>
             <button role="button" class="btn" ng-click="editCard(card)">Edit</button>
           </div>
         </li>
