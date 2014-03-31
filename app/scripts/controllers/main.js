@@ -12,6 +12,10 @@ angular.module('kanbanApp').controller('kanbanCtrl', ['$scope', '$log', '$q', '$
     $scope.project = result;
   };
   
+  var updateViewModelProjectList = function(results) {
+    $scope.projectList = results;
+  };
+  
   var getStatus = function(s) {
     return s.replace(/ /g, '');
   };
@@ -121,6 +125,8 @@ angular.module('kanbanApp').controller('kanbanCtrl', ['$scope', '$log', '$q', '$
   //
   // page load
   //
+  projectService.getAllProjects().then(updateViewModelProjectList);
+  
   preferenceService.getDefaultProjectId().then(
     function(results) {
       if (!!results) {

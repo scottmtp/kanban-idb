@@ -15,6 +15,10 @@ angular.module('kanbanApp').service('projectService', ['uuid4', 'dbService', fun
     return template;
   };
   
+  var getAllProjects = function() {
+    return dbService.getAllProjects();
+  };
+  
   var getProject = function(id) {
     return dbService.getProject(id);
   };
@@ -25,6 +29,7 @@ angular.module('kanbanApp').service('projectService', ['uuid4', 'dbService', fun
   
   return {
     getProjectTemplate: getProjectTemplate,
+    getAllProjects: getAllProjects,
     getProject: getProject,
     saveProject: saveProject
   };

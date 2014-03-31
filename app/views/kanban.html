@@ -1,15 +1,6 @@
 <div ng-include src="'/views/header.html'"></div>
 
-<div>
-  <h3>Project: {{project.name}}</h3>
-  <button role='button' class='btn' ng-click="createProject()">Create</button>
-  <button role='button' class='btn' ng-click="editProject(project)">Edit</button>
-  <button role='button' class='btn' ng-click="switchProject()">Switch</button>
-</div>
-
 <div id="cards">
-  <h3>Cards:</h3>
-  
   <div id="columns" class="row">
     <div class="workflowColumn col-md-4" ng-repeat="workflow in project.workflow">
       <h4>{{workflow}}</h4>
@@ -18,8 +9,10 @@
           <div class="card">
             <div><h5><span class="cardTitle">{{card.name}}</span></h5></div>
             <div><span class="cardStory">Story: {{card.story}}</span></div>
-            <div><span class="cardPoints">Points: {{card.points}}</span></div>
-            <div><span class="cardTaskCount">Tasks: {{card.tasks.length}}</span></div>
+            <div>
+              <span class="cardPoints">Points: {{card.points}}</span>
+              <span class="cardTaskCount">Tasks: {{card.tasks.length}}</span>
+            </div>
             <button role="button" class="btn" ng-click="editCard(card)">Edit</button>
           </div>
         </li>

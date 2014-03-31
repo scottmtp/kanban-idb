@@ -84,7 +84,7 @@ body {
 }
 
 .sortable {
-	width: 310px;
+	width: 250px;
 	-webkit-user-select: none;
 	-moz-user-select: none;
 	-ms-user-select: none;
