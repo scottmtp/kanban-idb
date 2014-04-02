@@ -1,26 +1,50 @@
 <div ng-include src="'/views/header.html'"></div>
 
-<div id="cards">
-  <div id="columns" class="row">
-    <div class="workflowColumn col-md-4" ng-repeat="workflow in project.workflow">
-      <h4>{{workflow}}</h4>
-      <ul class="cardHolder connected sortable" data-workflow="{{workflow}}" html-sortable="sortableOptions" ng-model="cards[workflow]">
-        <li ng-repeat="card in cards[workflow] track by card.id">
-          <div class="card">
-            <div><h5><span class="cardTitle">{{card.name}}</span></h5></div>
-            <div><span class="cardStory">Story: {{card.story}}</span></div>
-            <div>
-              <span class="cardPoints">Points: {{card.points}}</span>
-              <span class="cardTaskCount">Tasks: {{card.tasks.length}}</span>
-            </div>
-            <button role="button" class="btn" ng-click="editCard(card)">Edit</button>
-          </div>
-        </li>
-      </ul>
+<tabset>
+  <tab>
+    <tab-heading>
+      Board
+    </tab-heading>
+    
+    <div id="cards">
+      <div id="columns" class="row">
+        <div class="workflowColumn col-md-4" ng-repeat="workflow in project.workflow">
+          <h4>{{workflow}}</h4>
+          <ul class="cardHolder connected sortable" data-workflow="{{workflow}}" html-sortable="sortableOptions" ng-model="cards[workflow]">
+            <li ng-repeat="card in cards[workflow] track by card.id">
+              <div class="card">
+                <div><h5><span class="cardTitle">{{card.name}}</span></h5></div>
+                <div><span class="cardStory">Story: {{card.story}}</span></div>
+                <div>
+                  <span class="cardPoints">Points: {{card.points}}</span>
+                  <span class="cardTaskCount">Tasks: {{card.tasks.length}}</span>
+                </div>
+                <button role="button" class="btn" ng-click="editCard(card)">Edit</button>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
     </div>
-  </div>
+
+  </tab>
+
+  <tab>
+    <tab-heading>
+      List
+    </tab-heading>
+  </tab>
+
+  <tab>
+    <tab-heading>
+      Archive
+    </tab-heading>
+  </tab>
+
+</tabset>
   
-  <button role='button' class='btn' ng-click="createCard(project)">Create</button>
+<div class="button-global">
+  <button role='button' class='btn' ng-click="createCard(project)">Create card</button>
 </div>
 
 <div ng-include src="'/views/footer.html'"></div>
