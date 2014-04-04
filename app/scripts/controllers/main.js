@@ -23,10 +23,8 @@ angular.module('kanbanApp').controller('kanbanCtrl', ['$scope', '$log', '$q', '$
   var sortUpdate = function(e, data) {
     var startWorkflow = $(data.startparent).attr('data-workflow');
     var endWorkflow = $(data.endparent).attr('data-workflow');
-    
     var $start = data.oldindex;
     var $end   = data.item.index();
-    $log.info('s: ' + $start + ', e: ' + $end);
     
     $scope.$apply(function () {
       if (startWorkflow === endWorkflow) {
@@ -158,10 +156,10 @@ angular.module('kanbanApp').controller('kanbanCtrl', ['$scope', '$log', '$q', '$
   $scope.listCards = [];
   $scope.gridOptions = { 
     data: 'listCards',
-    columnDefs: [{field:'name', displayName:'Name'},
-      {field:'story', displayName:'Story'},
-      {field:'points', displayName:'Points'},
-      {field:'status', displayName:'Status'}]
+    columnDefs: [{field:'name', displayName:'Name', width: 120},
+      {field:'story', displayName:'Story', width: 480 },
+      {field:'points', displayName:'Points', width: 90 },
+      {field:'status', displayName:'Status', width: 90 }]
   };
   
   preferenceService.getDefaultProjectId().then(
