@@ -3,8 +3,18 @@
 
 angular.module('kanbanApp').service('kanbanService', ['uuid4', 'dbService', function(uuid4, dbService) {
   var getCardTemplate = function(initialStatus) {
-    var templateCard = {'id': uuid4.generate(), ordinal: 0, 'status': initialStatus, 'points': 0, 'tasks': [], 'newTask': ''};
+    var templateTask = getTaskTemplate();
+    var templateCard = {
+      'id': uuid4.generate(),
+      'ordinal': 0,
+      'status': initialStatus,
+      'points': 0,
+      'tasks': [], 'newTask': templateTask};
     return templateCard;
+  };
+  
+  var getTaskTemplate = function() {
+    return {'name': '', 'status': 'Open'};
   };
   
   var getCards = function(project) {
@@ -21,6 +31,7 @@ angular.module('kanbanApp').service('kanbanService', ['uuid4', 'dbService', func
   
   return {
     getCardTemplate: getCardTemplate,
+    getTaskTemplate: getTaskTemplate,
     getCards: getCards,
     saveCard: saveCard,
     deleteCard: deleteCard

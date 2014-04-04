@@ -30,21 +30,21 @@ angular.module('kanbanApp').controller('kanbanCtrl', ['$scope', '$log', '$q', '$
     
     $scope.$apply(function () {
       if (startWorkflow === endWorkflow) {
-        $scope.cards[startWorkflow].splice($end, 0, $scope.cards[startWorkflow].splice($start, 1)[0]);
+        $scope.kanbanCards[startWorkflow].splice($end, 0, $scope.kanbanCards[startWorkflow].splice($start, 1)[0]);
       } else {
         if (typeof $destItems === 'undefined') {
-          $scope.cards[endWorkflow] = [];
+          $scope.kanbanCards[endWorkflow] = [];
         }
       
-        $scope.cards[endWorkflow].splice($end, 0, $scope.cards[startWorkflow].splice($start, 1)[0]);
+        $scope.kanbanCards[endWorkflow].splice($end, 0, $scope.kanbanCards[startWorkflow].splice($start, 1)[0]);
       }
     });
     
     var promises = [];
-    for (var i = 0; i < $scope.cards[endWorkflow].length; i++) {
-      $scope.cards[endWorkflow][i].ordinal = i;
-      $scope.cards[endWorkflow][i].status = endWorkflow
-      promises.push(kanbanService.saveCard($scope.project, $scope.cards[endWorkflow][i]));
+    for (var i = 0; i < $scope.kanbanCards[endWorkflow].length; i++) {
+      $scope.kanbanCards[endWorkflow][i].ordinal = i;
+      $scope.kanbanCards[endWorkflow][i].status = endWorkflow
+      promises.push(kanbanService.saveCard($scope.project, $scope.kanbanCards[endWorkflow][i]));
     }
     
     $q.all(promises)
@@ -56,7 +56,7 @@ angular.module('kanbanApp').controller('kanbanCtrl', ['$scope', '$log', '$q', '$
   var updateViewModelCards = function(results) {
     $log.debug('updateViewModelCards');
     $scope.listCards = results;
-    $scope.cards = _.chain(results).sortBy('ordinal').groupBy('status').value();
+    $scope.kanbanCards = _.chain(results).sortBy('ordinal').groupBy('status').value();
     $('.sortable').sortable($scope.sortableOptions);
     
     // remove default binding as it can't deal with our model
@@ -178,8 +178,8 @@ angular.module('kanbanApp').controller('kanbanCtrl', ['$scope', '$log', '$q', '$
   );
 }]);
 
-angular.module('kanbanApp').controller('CardDetailCtrl', ['$scope', '$modalInstance', 'card', 'workflow',
-function($scope, $modalInstance, card, workflow) {
+angular.module('kanbanApp').controller('CardDetailCtrl', ['$scope', '$modalInstance', 'kanbanService', 'card', 'workflow',
+function($scope, $modalInstance, kanbanService, card, workflow) {
   //
   // on page load
   //
@@ -192,7 +192,7 @@ function($scope, $modalInstance, card, workflow) {
   
   $scope.addTask = function() {
     $scope.card.tasks.push($scope.card.newTask);
-    $scope.card.newTask = '';
+    $scope.card.newTask = kanbanService.getTaskTemplate();
   };
   
   $scope.deleteTask = function(idx) {

@@ -58,13 +58,16 @@
       
       <div class="cardDetails">
         <ul>
-          <li ng-repeat="t in card.tasks">{{t}} <button ng-click="deleteTask($index)" class=""><i class="glyphicon glyphicon-remove"></i> Delete</button></li>
+          <li ng-repeat="t in card.tasks">
+            {{t.name}}, {{t.status}}
+            <button ng-click="deleteTask($index)" class=""><i class="glyphicon glyphicon-remove"></i> Delete</button>
+          </li>
         </ul>
         
         <div class="form-group">
           <label class="col-sm-2 control-label">Task:</label>
           <div class="col-sm-8">
-            <input type='text' ng-model="card.newTask" class="form-control"><button ng-click="addTask()" class="">
+            <input type='text' ng-model="card.newTask.name" class="form-control"><button ng-click="addTask()" class="">
             <i class="glyphicon glyphicon-plus-sign"></i> Add</button>
           </div>
           
