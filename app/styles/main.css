@@ -149,6 +149,10 @@ li.sortable-placeholder {
 .cardForm label {
 }
 
+.cardAction {
+  padding: 0 4px 0 8px;
+}
+
 .button-global {
   margin: 4px;
   padding: 4px;
@@ -157,4 +161,8 @@ li.sortable-placeholder {
 .gridStyle {
   border: 1px solid rgb(212,212,212);
   height: 400px;
+}
+
+.hidden {
+  display: none;
 }

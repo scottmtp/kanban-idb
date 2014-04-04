@@ -102,6 +102,17 @@ angular.module('kanbanApp').controller('kanbanCtrl', ['$scope', '$log', '$q', '$
     connectWith: '.connected'
   };
   
+  $scope.toggleCard = function(event) {
+    $log.debug('toggleCard ' + $(event.target).attr('class'));
+    
+    if ($(event.target).hasClass('card')) {
+      $(event.target).find('span.cardStory').toggleClass('hidden');
+    } else {
+      $(event.target).parent().parent().find('span.cardStory').toggleClass('hidden');
+    }
+    
+  };
+  
   $scope.createProject = function() {
     $log.debug('createProject');
   };
@@ -113,6 +124,10 @@ angular.module('kanbanApp').controller('kanbanCtrl', ['$scope', '$log', '$q', '$
   $scope.switchProject = function() {
     $log.debug('switchProject');
   };
+  
+  $scope.actions = function(card) {
+    $log.debug('actions');
+  }
   
   $scope.editCard = function(card) {
     var modalCard = angular.copy(card);
