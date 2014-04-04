@@ -19,7 +19,7 @@
                   <span class="cardPoints">Points: {{card.points}}</span>
                   <span class="cardTaskCount">Tasks: {{card.tasks.length}}</span>
                 </div>
-                <button role="button" class="btn" ng-click="editCard(card)">Edit</button>
+                <a ng-click="editCard(card)">Edit</a>
               </div>
             </li>
           </ul>
@@ -33,6 +33,7 @@
     <tab-heading>
       List
     </tab-heading>
+    <div class="gridStyle" ng-grid="gridOptions" ui-if="listCards.length>0" ng-style="getTableStyle()"></div>
   </tab>
 
   <tab>
@@ -44,7 +45,7 @@
 </tabset>
   
 <div class="button-global">
-  <button role='button' class='btn' ng-click="createCard(project)">Create card</button>
+  <button role="button" class="btn btn-primary" ng-click="createCard(project)">Create card</button>
 </div>
 
 <div ng-include src="'/views/footer.html'"></div>

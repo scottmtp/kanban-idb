@@ -55,6 +55,7 @@ angular.module('kanbanApp').controller('kanbanCtrl', ['$scope', '$log', '$q', '$
   
   var updateViewModelCards = function(results) {
     $log.debug('updateViewModelCards');
+    $scope.listCards = results;
     $scope.cards = _.chain(results).sortBy('ordinal').groupBy('status').value();
     $('.sortable').sortable($scope.sortableOptions);
     
@@ -63,6 +64,8 @@ angular.module('kanbanApp').controller('kanbanCtrl', ['$scope', '$log', '$q', '$
     
     // attach to update event
     $('.sortable').sortable().bind('sortupdate', sortUpdate);
+    
+    $scope.listCards = results;
   };
   
   var editCardImpl = function(aCard) {
@@ -122,10 +125,29 @@ angular.module('kanbanApp').controller('kanbanCtrl', ['$scope', '$log', '$q', '$
     editCardImpl(modalCard);
   };
   
+  $scope.getTableStyle= function() {
+    var rowHeight=30;
+    var headerHeight=45;
+    var newHeight = !!$scope.listCards.length ? $scope.listCards.length * rowHeight + headerHeight : 400;
+    return {
+      height: newHeight + "px"
+    };
+  };
+  
   //
   // page load
   //
   projectService.getAllProjects().then(updateViewModelProjectList);
+  
+  // ng-grid
+  $scope.listCards = [];
+  $scope.gridOptions = { 
+    data: 'listCards',
+    columnDefs: [{field:'name', displayName:'Name'},
+      {field:'story', displayName:'Story'},
+      {field:'points', displayName:'Points'},
+      {field:'status', displayName:'Status'}]
+  };
   
   preferenceService.getDefaultProjectId().then(
     function(results) {
