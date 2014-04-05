@@ -17,9 +17,9 @@ angular.module('kanbanApp').controller('kanbanCtrl', ['$scope', '$log', '$q', '$
     $scope.projectList = results;
   };
   
-  var updateAndSaveAllCards = function(project, cardList, endWorkflow) {
+  var updateAndSaveAllCards = function(project, cardList, endWorkflow, start) {
     var promises = [];
-    for (var i = 0; i < cardList.length; i++) {
+    for (var i = start; i < cardList.length; i++) {
       cardList[i].ordinal = i;
       cardList[i].status = endWorkflow;
       promises.push(kanbanService.saveCard(project, cardList[i]));
@@ -50,7 +50,7 @@ angular.module('kanbanApp').controller('kanbanCtrl', ['$scope', '$log', '$q', '$
         $scope.kanbanCards[endWorkflow].splice($end, 0, removed);
       }
       
-      var promises = updateAndSaveAllCards($scope.project, $scope.kanbanCards[endWorkflow], endWorkflow);
+      var promises = updateAndSaveAllCards($scope.project, $scope.kanbanCards[endWorkflow], endWorkflow, $end);
       $q.all(promises)
         .then(function() { 
           return kanbanService.getCards($scope.project); })
