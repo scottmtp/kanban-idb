@@ -1,0 +1,22 @@
+<div class='modal-header'>
+  <h3>
+    Card: {{card.name}}
+  </h3>
+</div>
+
+<div class='modal-body'>
+  <h5>Delete card</h5>
+  <div>
+    <button class="btn btn-primary" ng-click="deleteCard(card)">Delete</button>
+  </div>
+  
+  <h5>Archive card</h5>
+  <div>
+    <button class="btn btn-primary" ng-click="archiveCard(card)">Archive</button>
+  </div>
+  
+</div>
+  
+<div class='modal-footer'>
+  <button class="btn btn-primary" ng-click="close()">Close</button>
+</div>
