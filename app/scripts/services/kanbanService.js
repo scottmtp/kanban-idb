@@ -1,4 +1,3 @@
-/*global _ */
 'use strict';
 
 angular.module('kanbanApp').service('kanbanService', ['uuid4', 'dbService', function(uuid4, dbService) {
@@ -9,7 +8,10 @@ angular.module('kanbanApp').service('kanbanService', ['uuid4', 'dbService', func
       'ordinal': 0,
       'status': initialStatus,
       'points': 0,
-      'tasks': [], 'newTask': templateTask};
+      'tasks': [],
+      'newTask': templateTask
+    };
+    
     return templateCard;
   };
   

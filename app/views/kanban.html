@@ -13,14 +13,16 @@
           <ul class="cardHolder connected sortable" data-workflow="{{workflow}}" html-sortable="sortableOptions" ng-model="cards[workflow]">
             <li ng-repeat="card in kanbanCards[workflow] track by card.id">
               <div class="card" ng-dblclick="toggleCard($event)">
-                <div><h5><span class="cardTitle">{{card.name}}</span></h5></div>
+                <div>
+                  <h5><span class="cardTitle">{{card.name}}</span>
+                  <a class="cardAction" ng-click="editCard(card)">Edit</a>
+                  <a class="cardAction" ng-click="actions(card)">Actions</a></h5>
+                </div>
                 <div><span class="cardStory"><span class="cardLabel">Story:</span> {{card.story}}</span></div>
                 <div>
                   <span class="cardPoints"><span class="cardLabel">Points:</span> {{card.points}}</span>
                   <span class="cardTaskCount"><span class="cardLabel">Tasks:</span> {{card.tasks.length}}</span>
                 </div>
-                <a class="cardAction" ng-click="editCard(card)">Edit</a>
-                <a class="cardAction" ng-click="actions(card)">Actions</a>
               </div>
             </li>
           </ul>

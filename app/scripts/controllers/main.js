@@ -13,11 +13,8 @@ angular.module('kanbanApp').controller('kanbanCtrl', ['$scope', '$log', '$q', '$
   };
   
   var updateViewModelProjectList = function(results) {
+    $log.debug('updateViewModelProjectList');
     $scope.projectList = results;
-  };
-  
-  var getStatus = function(s) {
-    return s.replace(/ /g, '');
   };
   
   var sortUpdate = function(e, data) {
@@ -41,14 +38,12 @@ angular.module('kanbanApp').controller('kanbanCtrl', ['$scope', '$log', '$q', '$
     var promises = [];
     for (var i = 0; i < $scope.kanbanCards[endWorkflow].length; i++) {
       $scope.kanbanCards[endWorkflow][i].ordinal = i;
-      $scope.kanbanCards[endWorkflow][i].status = endWorkflow
+      $scope.kanbanCards[endWorkflow][i].status = endWorkflow;
       promises.push(kanbanService.saveCard($scope.project, $scope.kanbanCards[endWorkflow][i]));
     }
     
     $q.all(promises)
-      .then(function() {
-        return kanbanService.getCards($scope.project);
-      }).then(updateViewModelCards);
+      .then(function() { return kanbanService.getCards($scope.project); }).then(updateViewModelCards);
   };
   
   var updateViewModelCards = function(results) {
@@ -84,12 +79,34 @@ angular.module('kanbanApp').controller('kanbanCtrl', ['$scope', '$log', '$q', '$
     });
     
     modalInstance.result
-      .then(function(card) {
-        return kanbanService.saveCard($scope.project, card);
+      .then(function(card) { return kanbanService.saveCard($scope.project, card); })
+      .then(function() { return kanbanService.getCards($scope.project); })
+      .then(updateViewModelCards);
+  };
+  
+  var editProjectImpl = function(aProject) {
+    $log.debug('editProject');
+    var modalInstance;
+    
+    modalInstance = $modal.open({
+      templateUrl: '/views/projectDetail.html',
+      controller: 'ProjectDetailCtrl',
+      resolve: {
+        project: function() {
+          return aProject;
+        }
+      }
+    });
+    
+    modalInstance.result
+      .then(function(project) {
+        $scope.project = project;
+        return projectService.saveProject(project);
       })
-      .then(function() {
-        return kanbanService.getCards($scope.project);
-      })
+      .then(function() { return preferenceService.setDefaultProjectId($scope.project.id); })
+      .then(function() { return projectService.getAllProjects(); })
+      .then(updateViewModelProjectList)
+      .then(function() { return kanbanService.getCards($scope.project); })
       .then(updateViewModelCards);
   };
   
@@ -113,19 +130,29 @@ angular.module('kanbanApp').controller('kanbanCtrl', ['$scope', '$log', '$q', '$
   
   $scope.createProject = function() {
     $log.debug('createProject');
+    var modalProject = projectService.getProjectTemplate();
+    editProjectImpl(modalProject);
   };
   
   $scope.editProject = function(project) {
-    $log.debug('editProject: ' + JSON.stringify(project));
+    $log.debug('editProject');
+    var modalProject = angular.copy(project);
+    editProjectImpl(modalProject);
   };
   
-  $scope.switchProject = function() {
-    $log.debug('switchProject');
+  $scope.selectProject = function(project) {
+    $log.debug('selectProject');
+    if (project.id !== $scope.project.id) {
+      $scope.project = project;
+      preferenceService.setDefaultProjectId($scope.project.id)
+        .then(function() { return kanbanService.getCards($scope.project); })
+        .then(updateViewModelCards);
+    }
   };
   
-  $scope.actions = function(card) {
+  $scope.actions = function() {
     $log.debug('actions');
-  }
+  };
   
   $scope.editCard = function(card) {
     var modalCard = angular.copy(card);
@@ -143,18 +170,17 @@ angular.module('kanbanApp').controller('kanbanCtrl', ['$scope', '$log', '$q', '$
     var headerHeight=45;
     var newHeight = !!$scope.listCards.length ? $scope.listCards.length * rowHeight + headerHeight : 400;
     return {
-      height: newHeight + "px"
+      height: newHeight + 'px'
     };
   };
   
   //
   // page load
   //
-  projectService.getAllProjects().then(updateViewModelProjectList);
   
   // ng-grid
   $scope.listCards = [];
-  $scope.gridOptions = { 
+  $scope.gridOptions = {
     data: 'listCards',
     columnDefs: [{field:'name', displayName:'Name', width: 120},
       {field:'story', displayName:'Story', width: 480 },
@@ -162,6 +188,10 @@ angular.module('kanbanApp').controller('kanbanCtrl', ['$scope', '$log', '$q', '$
       {field:'status', displayName:'Status', width: 90 }]
   };
   
+  // update project list
+  projectService.getAllProjects().then(updateViewModelProjectList);
+  
+  // get default project, or create new one if no projects exist
   preferenceService.getDefaultProjectId().then(
     function(results) {
       if (!!results) {
@@ -171,54 +201,10 @@ angular.module('kanbanApp').controller('kanbanCtrl', ['$scope', '$log', '$q', '$
         $scope.defaultProjectId = projectTemplate.id;
         return projectService.saveProject(projectTemplate);
       }
-    }
-  ).then(
-    function() {
-      return preferenceService.setDefaultProjectId($scope.defaultProjectId);
-    }
-  ).then(
-    function() {
-      return projectService.getProject($scope.defaultProjectId);
-    }
-  ).then(
-    updateViewModelProject
-  ).then(
-    function() {
-      return kanbanService.getCards($scope.project);
-    }
-  ).then(
-    updateViewModelCards
-  );
-}]);
-
-angular.module('kanbanApp').controller('CardDetailCtrl', ['$scope', '$modalInstance', 'kanbanService', 'card', 'workflow',
-function($scope, $modalInstance, kanbanService, card, workflow) {
-  //
-  // on page load
-  //
-  $scope.card = card;
-  $scope.workflow = workflow;
-  
-  //
-  // view functions
-  //
-  
-  $scope.addTask = function() {
-    $scope.card.tasks.push($scope.card.newTask);
-    $scope.card.newTask = kanbanService.getTaskTemplate();
-  };
-  
-  $scope.deleteTask = function(idx) {
-    $scope.card.tasks.splice(idx, 1);
-  };
-  
-  // save changes
-  $scope.save = function(card) {
-    $modalInstance.close(card);
-  };
-
-  // cancel changes
-  $scope.cancel = function() {
-    $modalInstance.dismiss('cancel');
-  };
+    })
+  .then( function() { return preferenceService.setDefaultProjectId($scope.defaultProjectId); })
+  .then( function() { return projectService.getProject($scope.defaultProjectId); })
+  .then( updateViewModelProject)
+  .then( function() { return kanbanService.getCards($scope.project); })
+  .then( updateViewModelCards );
 }]);
