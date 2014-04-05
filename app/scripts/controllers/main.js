@@ -126,6 +126,7 @@ angular.module('kanbanApp').controller('kanbanCtrl', ['$scope', '$log', '$q', '$
   $scope.sortableOptions = {
     placeholder: '.card',
     connectWith: '.cardHolder',
+    distance: 5,
     update: sortUpdate,
     start: function(event, ui) {
       ui.item.startPos = ui.item.index();
