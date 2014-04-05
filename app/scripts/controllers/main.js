@@ -52,8 +52,7 @@ angular.module('kanbanApp').controller('kanbanCtrl', ['$scope', '$log', '$q', '$
       
       var promises = updateAndSaveAllCards($scope.project, $scope.kanbanCards[endWorkflow], endWorkflow, $end);
       $q.all(promises)
-        .then(function() { 
-          return kanbanService.getCards($scope.project); })
+        .then(function() { return kanbanService.getCards($scope.project); })
         .then(updateViewModelCards);
     }
   };
@@ -62,13 +61,12 @@ angular.module('kanbanApp').controller('kanbanCtrl', ['$scope', '$log', '$q', '$
     $log.debug('updateViewModelCards');
     $scope.listCards = results;
     $scope.kanbanCards = _.chain(results).sortBy('ordinal').groupBy('status').value();
-    $scope.archiveCards = $scope.kanbanCards['Archive'];
+    $scope.archiveCards = $scope.kanbanCards.Archive;
     if (!$scope.archiveCards) {
       $scope.archiveCards = [];
     }
     
     $('.sortable').sortable($scope.sortableOptions);
-    $scope.listCards = results;
   };
   
   var editCardImpl = function(aCard) {

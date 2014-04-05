@@ -10,7 +10,7 @@
       <div id="columns" class="row">
         <div class="workflowColumn col-md-4" ng-repeat="workflow in project.workflow">
           <h4>{{workflow}}</h4>
-          <ul class="cardHolder connected sortable" data-workflow="{{workflow}}" ui-sortable="sortableOptions">
+          <ul class="cardHolder connected sortable" data-workflow="{{workflow}}" ui-sortable="sortableOptions" ng-model="kanbanCards[workflow]">
             <li ng-repeat="card in kanbanCards[workflow] track by card.id">
               <div class="card" ng-dblclick="toggleCard($event)">
                 <div>
