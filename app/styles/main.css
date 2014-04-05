@@ -108,7 +108,7 @@ li.sortable-placeholder {
 }
             
 .card {
-  cursor: pointer;
+  cursor: move;
 }
 
 .cardDetails {
@@ -133,6 +133,9 @@ li.sortable-placeholder {
   padding: 4px;
 }
 
+.workflowColumn {
+  float: left;
+}
 .gridStyle {
   border: 1px solid rgb(212,212,212);
   height: 400px;

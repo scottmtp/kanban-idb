@@ -9,7 +9,7 @@ angular.module('kanbanApp', [
   'ui.utils',
   'dialogs',
   'uuid4',
-  'htmlSortable',
+  'ui.sortable',
   'ngGrid'
 ])
   .config(function($routeProvider) {

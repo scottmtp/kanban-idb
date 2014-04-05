@@ -28,27 +28,34 @@ angular.module('kanbanApp').controller('kanbanCtrl', ['$scope', '$log', '$q', '$
     return promises;
   };
   
-  var sortUpdate = function(e, data) {
-    var startWorkflow = $(data.startparent).attr('data-workflow');
-    var endWorkflow = $(data.endparent).attr('data-workflow');
-    var $start = data.oldindex;
-    var $end   = data.item.index();
+  var sortUpdate = function(e, ui) {
+    // only run callback for 'drop' list
+    if (this === ui.item.parent()[0]) {
+      var endWorkflow = ui.item.parent().attr('data-workflow');
+      var startWorkflow = ui.item.startWorkflow;
     
-    $scope.$apply(function () {
+      var $start = ui.item.startPos;
+      var $end   = ui.item.index();
+      $log.info('sw: ' + startWorkflow + ' ew: ' + endWorkflow + ' s: ' + $start + ' e: ' + $end);
+      
+      var removed;
       if (startWorkflow === endWorkflow) {
-        $scope.kanbanCards[startWorkflow].splice($end, 0, $scope.kanbanCards[startWorkflow].splice($start, 1)[0]);
+        removed = $scope.kanbanCards[startWorkflow].splice($start, 1)[0];
+        $scope.kanbanCards[startWorkflow].splice($end, 0, removed);
       } else {
-        if (typeof $destItems === 'undefined') {
+        if (typeof $scope.kanbanCards[endWorkflow] === 'undefined') {
           $scope.kanbanCards[endWorkflow] = [];
         }
-      
-        $scope.kanbanCards[endWorkflow].splice($end, 0, $scope.kanbanCards[startWorkflow].splice($start, 1)[0]);
+        removed = $scope.kanbanCards[startWorkflow].splice($start, 1)[0];
+        $scope.kanbanCards[endWorkflow].splice($end, 0, removed);
       }
-    });
-    
-    var promises = updateAndSaveAllCards($scope.project, $scope.kanbanCards[endWorkflow], endWorkflow);
-    $q.all(promises)
-      .then(function() { return kanbanService.getCards($scope.project); }).then(updateViewModelCards);
+      
+      var promises = updateAndSaveAllCards($scope.project, $scope.kanbanCards[endWorkflow], endWorkflow);
+      $q.all(promises)
+        .then(function() { 
+          return kanbanService.getCards($scope.project); })
+        .then(updateViewModelCards);
+    }
   };
   
   var updateViewModelCards = function(results) {
@@ -61,13 +68,6 @@ angular.module('kanbanApp').controller('kanbanCtrl', ['$scope', '$log', '$q', '$
     }
     
     $('.sortable').sortable($scope.sortableOptions);
-    
-    // remove default binding as it can't deal with our model
-    $('.sortable').sortable().unbind();
-    
-    // attach to update event
-    $('.sortable').sortable().bind('sortupdate', sortUpdate);
-    
     $scope.listCards = results;
   };
   
@@ -124,7 +124,13 @@ angular.module('kanbanApp').controller('kanbanCtrl', ['$scope', '$log', '$q', '$
   // scope
   //
   $scope.sortableOptions = {
-    connectWith: '.connected'
+    placeholder: '.card',
+    connectWith: '.cardHolder',
+    update: sortUpdate,
+    start: function(event, ui) {
+      ui.item.startPos = ui.item.index();
+      ui.item.startWorkflow = ui.item.parent().attr('data-workflow');
+    },
   };
   
   $scope.toggleCard = function(event) {
