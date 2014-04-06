@@ -196,6 +196,7 @@ angular.module('kanbanApp').controller('kanbanCtrl', ['$scope', '$log', '$q', '$
   $scope.listCards = [];
   $scope.gridOptions = {
     data: 'listCards',
+    enableColumnResize: true,
     columnDefs: [{field:'name', displayName:'Name', width: 120},
       {field:'story', displayName:'Story', width: 480 },
       {field:'points', displayName:'Points', width: 90 },
@@ -205,6 +206,7 @@ angular.module('kanbanApp').controller('kanbanCtrl', ['$scope', '$log', '$q', '$
   $scope.archiveCards = [];
   $scope.archiveGridOptions = {
     data: 'archiveCards',
+    enableColumnResize: true,
     columnDefs: [{field:'name', displayName:'Name', width: 120},
       {field:'story', displayName:'Story', width: 480 },
       {field:'points', displayName:'Points', width: 90 },
