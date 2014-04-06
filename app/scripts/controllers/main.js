@@ -192,10 +192,6 @@ angular.module('kanbanApp').controller('kanbanCtrl', ['$scope', '$log', '$q', '$
     };
   };
   
-  //
-  // page load
-  //
-  
   // ng-grid
   $scope.listCards = [];
   $scope.gridOptions = {

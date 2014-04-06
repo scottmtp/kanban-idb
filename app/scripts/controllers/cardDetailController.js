@@ -2,15 +2,8 @@
 
 angular.module('kanbanApp').controller('CardDetailCtrl', ['$scope', '$modalInstance', 'kanbanService', 'card', 'workflow',
 function($scope, $modalInstance, kanbanService, card, workflow) {
-  //
-  // on page load
-  //
   $scope.card = card;
   $scope.workflow = workflow;
-  
-  //
-  // view functions
-  //
   
   $scope.addTask = function() {
     $scope.card.tasks.push($scope.card.newTask);
