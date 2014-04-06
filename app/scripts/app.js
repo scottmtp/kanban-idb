@@ -15,7 +15,7 @@ angular.module('kanbanApp', [
   .config(function($routeProvider) {
     $routeProvider
       .when('/kanban', {
-        templateUrl: '/views/kanban.html',
+        templateUrl: 'views/kanban.html',
         controller: 'kanbanCtrl'
       })
       .otherwise({

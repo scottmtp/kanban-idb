@@ -60,7 +60,7 @@ angular.module('kanbanApp').controller('kanbanCtrl', ['$scope', '$log', '$q', '$
     var modalInstance;
     
     modalInstance = $modal.open({
-      templateUrl: '/views/carddetail.html',
+      templateUrl: 'views/carddetail.html',
       controller: 'CardDetailCtrl',
       resolve: {
         card: function() {
@@ -83,7 +83,7 @@ angular.module('kanbanApp').controller('kanbanCtrl', ['$scope', '$log', '$q', '$
     var modalInstance;
     
     modalInstance = $modal.open({
-      templateUrl: '/views/projectDetail.html',
+      templateUrl: 'views/projectDetail.html',
       controller: 'ProjectDetailCtrl',
       resolve: {
         project: function() {
@@ -149,7 +149,7 @@ angular.module('kanbanApp').controller('kanbanCtrl', ['$scope', '$log', '$q', '$
     $log.debug('actions');
     var modalInstance;
     modalInstance = $modal.open({
-      templateUrl: '/views/cardActions.html',
+      templateUrl: 'views/cardActions.html',
       controller: 'CardActionCtrl',
       resolve: {
         card: function() {
