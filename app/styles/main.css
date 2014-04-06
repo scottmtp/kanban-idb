@@ -111,6 +111,10 @@ li.sortable-placeholder {
   cursor: move;
 }
 
+.card a {
+  cursor: pointer;
+}
+
 .cardDetails {
   padding: 8px;
 }
