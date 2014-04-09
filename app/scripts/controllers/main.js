@@ -60,7 +60,7 @@ angular.module('kanbanApp').controller('kanbanCtrl', ['$scope', '$log', '$q', '$
     var modalInstance;
     
     modalInstance = $modal.open({
-      templateUrl: 'views/carddetail.html',
+      templateUrl: 'views/cardDetail.html',
       controller: 'CardDetailCtrl',
       resolve: {
         card: function() {
