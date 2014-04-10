@@ -25,6 +25,7 @@ module.exports = function(config) {
       'app/bower_components/angular-uuid4/angular-uuid4.js',
       'app/bower_components/angular-ui-sortable/sortable.js',
       'app/bower_components/ng-grid/ng-grid-2.0.7.debug.js',
+      'app/bower_components/lodash/dist/lodash.js',
       'app/scripts/*.js',
       'app/scripts/**/*.js',
       'test/mock/**/*.js',
