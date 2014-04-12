@@ -10,11 +10,12 @@
     <button class="btn btn-primary" ng-click="deleteCard(card)">Delete</button>
   </div>
   
-  <h5>Archive card</h5>
-  <div>
-    <button class="btn btn-primary" ng-click="archiveCard(card)">Archive</button>
+  <div ng-show="card.status !== 'Archive'">
+    <h5>Archive card</h5>
+    <div>
+      <button class="btn btn-primary" ng-click="archiveCard(card)">Archive</button>
+    </div>
   </div>
-  
 </div>
   
 <div class='modal-footer'>

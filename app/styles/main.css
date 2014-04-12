@@ -145,3 +145,7 @@ li.sortable-placeholder {
 .hidden {
   display: none;
 }
+
+tab-heading {
+  cursor: pointer;
+}
