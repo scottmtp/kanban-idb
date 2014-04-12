@@ -8,13 +8,13 @@
     
     <div id="cards">
       <div id="columns" class="row">
-        <div class="workflowColumn col-md-4" ng-repeat="workflow in project.workflow">
+        <div class="workflowColumn col-md-4" ng-repeat="workflow in projectWorkflow">
           <h4>{{workflow}}</h4>
           <ul class="cardHolder connected sortable" data-workflow="{{workflow}}" ui-sortable="sortableOptions" ng-model="kanbanCards[workflow]">
             <li ng-repeat="card in kanbanCards[workflow] track by card.id">
               <div class="card" ng-dblclick="toggleCard($event)">
                 <div>
-                  <h5><span class="cardTitle">{{card.name}}</span>
+                  <h5>{{$index + 1}}: <span class="cardTitle">{{card.name}}</span>
                   <a class="cardAction" ng-click="editCard(card)">Edit</a>
                   <a class="cardAction" ng-click="actions(card)">Actions</a></h5>
                 </div>

@@ -8,8 +8,7 @@ angular.module('kanbanApp').service('projectService', ['uuid4', 'dbService', fun
     var template = {
       'id': projectId,
       'name': 'My Project',
-      'dbname': 'kb_' + projectId,
-      'workflow': ['Backlog', 'In Progress', 'Done']
+      'dbname': 'kb_' + projectId
     };
     
     return template;
