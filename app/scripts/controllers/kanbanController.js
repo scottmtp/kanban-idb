@@ -16,7 +16,7 @@ angular.module('kanbanApp').controller('kanbanCtrl', ['$scope', '$log', '$q', '$
   
   $scope.updateViewModelCards = function(results) {
     $log.debug('updateViewModelCards');
-    $scope.listCards = results;
+    $scope.listCards = _.sortBy(results, 'name');
     $scope.kanbanCards = _.chain(results).sortBy('ordinal').groupBy('status').value();
     _.forEach($scope.project.workflow, function(workflow) {
       if (!$scope.kanbanCards[workflow]) {

@@ -1,7 +1,7 @@
 <div ng-include src="'views/header.html'"></div>
 
 <tabset>
-  <tab>
+  <tab id="boardTab">
     <tab-heading>
       Board
     </tab-heading>
@@ -32,18 +32,62 @@
 
   </tab>
 
-  <tab>
+  <tab id="listTab">
     <tab-heading>
       List
     </tab-heading>
-    <div class="gridStyle" ng-grid="gridOptions" ui-if="listCards.length>0" ng-style="getTableStyle()"></div>
+    <table class="storyList table table-hover">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Story</th>
+          <th>Points</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr ng-repeat="c in listCards track by c.id">
+          <td>{{c.name}}</td>
+          <td>{{c.story}}</td>
+          <td>{{c.points}}</td>
+          <td>{{c.status}}</td>
+          <td>
+            <a class="cardAction" ng-click="editCard(c)">Edit</a>
+            <a class="cardAction" ng-click="actions(c)">Actions</a>
+          </td>
+        </tr>
+      </tbody>
+    </table>
   </tab>
 
-  <tab>
+  <tab id="archiveTab">
     <tab-heading>
       Archive
     </tab-heading>
-    <div class="gridStyle" ng-grid="archiveGridOptions" ui-if="archiveCards.length>0" ng-style="getTableStyle()"></div>
+    <table class="storyList table table-hover">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Story</th>
+          <th>Points</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr ng-repeat="c in archiveCards track by c.id">
+          <td>{{c.name}}</td>
+          <td>{{c.story}}</td>
+          <td>{{c.points}}</td>
+          <td>{{c.status}}</td>
+          <td>
+            <a class="cardAction" ng-click="editCard(c)">Edit</a>
+            <a class="cardAction" ng-click="actions(c)">Actions</a>
+          </td>
+        </tr>
+      </tbody>
+    </table>
   </tab>
 
 </tabset>
