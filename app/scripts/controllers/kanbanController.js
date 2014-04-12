@@ -30,27 +30,25 @@ angular.module('kanbanApp').controller('kanbanCtrl', ['$scope', '$log', '$q', '$
     }
   };
   
-  var updateAndSaveAllCards = function(project, cardList, endWorkflow, start) {
+  var updateAndSaveAllCards = function(project, cardList, endWorkflow) {
     var promises = [];
-    for (var i = start; i < cardList.length; i++) {
+    for (var i = 0; i < cardList.length; i++) {
       cardList[i].ordinal = i;
       cardList[i].status = endWorkflow;
       promises.push(kanbanService.saveCard(project, cardList[i]));
     }
-    
     return promises;
   };
   
   var sortUpdate = function(e, ui) {
-    // only run callback for 'drop' list
-    if (this === ui.item.parent()[0]) {
-      var endWorkflow = ui.item.sortable.droptarget.attr('data-workflow');
-      var end = ui.item.sortable.dropindex;
-      var promises = updateAndSaveAllCards($scope.project, $scope.kanbanCards[endWorkflow], endWorkflow, end);
-      $q.all(promises)
-        .then(function() { return kanbanService.getCards($scope.project); })
-        .then($scope.updateViewModelCards);
-    }
+    var startWorkflow = ui.item.startWorkflow,
+      endWorkflow = ui.item.sortable.droptarget.attr('data-workflow'),
+      promises;
+
+    promises = updateAndSaveAllCards($scope.project, $scope.kanbanCards[endWorkflow], endWorkflow);
+    $q.all(promises)
+      .then(function() { return kanbanService.getCards($scope.project); })
+      .then($scope.updateViewModelCards);
   };
   
   var editCardImpl = function(aCard) {
@@ -106,9 +104,8 @@ angular.module('kanbanApp').controller('kanbanCtrl', ['$scope', '$log', '$q', '$
     placeholder: '.card',
     connectWith: '.cardHolder',
     distance: 5,
-    update: sortUpdate,
+    stop: sortUpdate,
     start: function(event, ui) {
-      ui.item.startPos = ui.item.index();
       ui.item.startWorkflow = ui.item.parent().attr('data-workflow');
     }
   };
