@@ -177,37 +177,7 @@ angular.module('kanbanApp').controller('kanbanCtrl', ['$scope', '$log', '$q', '$
     var modalCard = kanbanService.getCardTemplate('Backlog');
     editCardImpl(modalCard);
   };
-  
-  $scope.getTableStyle= function() {
-    var rowHeight=30;
-    var headerHeight=45;
-    var newHeight = !!$scope.listCards.length ? $scope.listCards.length * rowHeight + headerHeight : 400;
-    return {
-      height: newHeight + 'px'
-    };
-  };
-  
-  // ng-grid
-  $scope.listCards = [];
-  $scope.gridOptions = {
-    data: 'listCards',
-    enableColumnResize: true,
-    columnDefs: [{field:'name', displayName:'Name', width: 120},
-      {field:'story', displayName:'Story', width: 480 },
-      {field:'points', displayName:'Points', width: 90 },
-      {field:'status', displayName:'Status', width: 90 }]
-  };
-  
-  $scope.archiveCards = [];
-  $scope.archiveGridOptions = {
-    data: 'archiveCards',
-    enableColumnResize: true,
-    columnDefs: [{field:'name', displayName:'Name', width: 120},
-      {field:'story', displayName:'Story', width: 480 },
-      {field:'points', displayName:'Points', width: 90 },
-      {field:'status', displayName:'Status', width: 90 }]
-  };
-  
+    
   // update project list
   projectService.getAllProjects().then($scope.updateViewModelProjectList);
   
