@@ -157,9 +157,9 @@ angular.module('kanbanApp').controller('kanbanCtrl', ['$scope', '$log', '$q', '$
           kanbanService.deleteCard($scope.project, result.card);
         } else if (result.outcome === 'archive') {
           result.card.status = 'Archive';
-          kanbanService.saveCard($scope.project, result.card);
         }
       })
+      .then(function(result) { return kanbanService.saveCard($scope.project, result.card); })
       .then(function() { return kanbanService.getCards($scope.project); })
       .then($scope.updateCards);
       

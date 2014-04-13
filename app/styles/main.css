@@ -146,6 +146,16 @@ li.sortable-placeholder {
   display: none;
 }
 
+.action {
+  cursor: pointer;
+  margin: 4px;
+  padding: 4px;
+}
+
+.strike {
+  text-decoration: line-through;
+}
+
 tab-heading {
   cursor: pointer;
 }

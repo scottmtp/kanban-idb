@@ -10,6 +10,14 @@ function($scope, $modalInstance, kanbanService, card, workflow) {
     $scope.card.newTask = kanbanService.getTaskTemplate();
   };
   
+  $scope.closeTask = function(idx) {
+    $scope.card.tasks[idx].status = 'Closed';
+  };
+  
+  $scope.reopenTask = function(idx) {
+    $scope.card.tasks[idx].status = 'Open';
+  };
+  
   $scope.deleteTask = function(idx) {
     $scope.card.tasks.splice(idx, 1);
   };

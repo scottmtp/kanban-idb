@@ -15,11 +15,12 @@
     </thead>
     <tbody>
       <tr ng-repeat="t in card.tasks">
-        <td>{{t.name}}</td>
+        <td><span ng-class="{strike: t.status==='Closed'}">{{t.name}}</span></td>
         <td>{{t.status}}</td>
         <td>
-          <a ng-show="t.status==='Open'" ng-click="closeTask($index)">close</a>
-          <a ng-show="t.status==='Closed'" ng-click="reopenTask($index)">reopen</a>
+          <a class="action" ng-show="t.status==='Open'" ng-click="closeTask($index)">Close</a>
+          <a class="action" ng-show="t.status==='Closed'" ng-click="reopenTask($index)">Re-Open</a>
+          <a class="action" ng-click="deleteTask($index)">Delete</a>
         </td>
       </tr>
     </tbody>

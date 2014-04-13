@@ -57,12 +57,26 @@
       </tab-heading>
       
       <div class="cardDetails">
-        <ul>
-          <li ng-repeat="t in card.tasks">
-            {{t.name}}, {{t.status}}
-            <button ng-click="deleteTask($index)" class=""><i class="glyphicon glyphicon-remove"></i> Delete</button>
-          </li>
-        </ul>
+        <table ng-show="card.tasks.length > 0" class="table table-hover">
+          <thead>
+            <tr>
+              <th>Task Details</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr ng-repeat="t in card.tasks">
+              <td><span ng-class="{strike: t.status==='Closed'}">{{t.name}}</span></td>
+              <td>{{t.status}}</td>
+              <td>
+                <a class="action" ng-show="t.status==='Open'" ng-click="closeTask($index)">Close</a>
+                <a class="action" ng-show="t.status==='Closed'" ng-click="reopenTask($index)">Re-Open</a>
+                <a class="action" ng-click="deleteTask($index)">Delete</a>
+              </td>
+            </tr>
+          </tbody>
+        </table>
         
         <div class="form-group">
           <label class="col-sm-2 control-label">Task:</label>
