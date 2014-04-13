@@ -5,17 +5,38 @@
 </div>
 
 <div class='modal-body'>
-  <h5>Delete card</h5>
-  <div>
-    <button class="btn btn-primary" ng-click="deleteCard(card)">Delete</button>
-  </div>
+  <table ng-show="card.tasks.length > 0" class="table table-hover">
+    <thead>
+      <tr>
+        <th>Task Details</th>
+        <th>Status</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr ng-repeat="t in card.tasks">
+        <td>{{t.name}}</td>
+        <td>{{t.status}}</td>
+        <td>
+          <a ng-show="t.status==='Open'" ng-click="closeTask($index)">close</a>
+          <a ng-show="t.status==='Closed'" ng-click="reopenTask($index)">reopen</a>
+        </td>
+      </tr>
+    </tbody>
+  </table>
   
+  <h5>Delete card</h5>
+  <div class="row">
+    <button class="btn btn-default" ng-click="deleteCard(card)">Delete</button>
+  </div>
+
   <div ng-show="card.status !== 'Archive'">
     <h5>Archive card</h5>
-    <div>
-      <button class="btn btn-primary" ng-click="archiveCard(card)">Archive</button>
+    <div class="row">
+      <button class="btn btn-default" ng-click="archiveCard(card)">Archive</button>
     </div>
   </div>
+  
 </div>
   
 <div class='modal-footer'>

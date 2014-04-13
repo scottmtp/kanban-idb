@@ -15,6 +15,13 @@ angular.module('kanbanApp').service('kanbanService', ['uuid4', 'dbService', func
     return templateCard;
   };
   
+  var setStatusAndOrdinal = function(project, cardList, status) {
+    for (var i = 0; i < cardList.length; i++) {
+      cardList[i].ordinal = i;
+      cardList[i].status = status;
+    }
+  };
+  
   var getTaskTemplate = function() {
     return {'name': '', 'status': 'Open'};
   };
@@ -27,6 +34,14 @@ angular.module('kanbanApp').service('kanbanService', ['uuid4', 'dbService', func
     return dbService.updateCard(project, card);
   };
   
+  var saveCards = function(project, cardList) {
+    var promises = [];
+    for (var i = 0; i < cardList.length; i++) {
+      promises.push(saveCard(project, cardList[i]));
+    }
+    return promises;
+  };
+  
   var deleteCard = function(project, card) {
     return dbService.removeCard(project, card.id);
   };
@@ -36,7 +51,9 @@ angular.module('kanbanApp').service('kanbanService', ['uuid4', 'dbService', func
     getTaskTemplate: getTaskTemplate,
     getCards: getCards,
     saveCard: saveCard,
-    deleteCard: deleteCard
+    saveCards: saveCards,
+    deleteCard: deleteCard,
+    setStatusAndOrdinal: setStatusAndOrdinal
   };
   
 }]);
