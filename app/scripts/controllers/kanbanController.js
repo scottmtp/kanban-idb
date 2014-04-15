@@ -154,12 +154,14 @@ angular.module('kanbanApp').controller('kanbanCtrl', ['$scope', '$log', '$q', '$
       .then(function(result) {
         $log.debug('action outcome: ' + result.outcome);
         if (result.outcome === 'delete') {
-          kanbanService.deleteCard($scope.project, result.card);
-        } else if (result.outcome === 'archive') {
-          result.card.status = 'Archive';
-        }
-      })
-      .then(function(result) { return kanbanService.saveCard($scope.project, result.card); })
+          return kanbanService.deleteCard($scope.project, result.card);
+        } else {
+          if (result.outcome === 'archive') {
+            result.card.status = 'Archive';
+          }
+          
+          return kanbanService.saveCard($scope.project, result.card); }
+        })
       .then(function() { return kanbanService.getCards($scope.project); })
       .then($scope.updateCards);
       
