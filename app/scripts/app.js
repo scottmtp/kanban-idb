@@ -7,7 +7,7 @@ angular.module('kanbanApp', [
   'ngRoute',
   'ui.bootstrap',
   'ui.utils',
-  'dialogs',
+  'dialogs.main',
   'uuid4',
   'ui.sortable'
 ])
