@@ -1,102 +1,20 @@
-/*global db:false */
+/*global _ */
 'use strict';
 
-angular.module('kanbanApp').service('dbService', ['$log', '$q', '$rootScope',
-  function dbService($log, $q, $rootScope) {
+angular.module('kanbanApp').service('dbService', ['$log', '$q', '$rootScope', 'pouchDB', 'pouchDBDecorators',
+  function dbService($log, $q, $rootScope, pouchDB, pouchDBDecorators) {
+    var db;
+
     // Use the global database
     var selectGlobal = function() {
       $log.info('Switching to global database.');
-      var promise = db.open({
-        server: 'kanban_global',
-        version: 1,
-        schema: {
-          preference: {
-            key: {
-              keyPath: 'name',
-              autoIncrement: false
-            },
-            indexes: {
-              name: {
-                unique: true
-              },
-            }
-          },
-
-          project: {
-            key: {
-              keyPath: 'id',
-              autoIncrement: false
-            },
-            indexes: {
-              id: {
-                unique: true
-              },
-            }
-          },
-
-        }
-      });
-
-      return promise;
+      db = pouchDB('kanban_global');
     };
 
     // Use a project database
     var selectProject = function(dbName) {
       $log.info('selectProject db: ' + dbName);
-      var promise = db.open({
-        server: dbName,
-        version: 1,
-        schema: {
-          setting: {
-            key: {
-              keyPath: 'name',
-              autoIncrement: false
-            },
-            indexes: {
-              name: {
-                unique: true
-              },
-            }
-          },
-
-          card: {
-            key: {
-              keyPath: 'id',
-              autoIncrement: false
-            },
-            indexes: {
-              id: {
-                unique: true
-              },
-              status: {
-                unique: false
-              },
-            }
-          },
-
-        }
-      });
-
-      return promise;
-    };
-
-    // wrap db.js in angular promise
-    var dbRun = function(serverPromise, queryFunction) {
-      var deferred = $q.defer();
-
-      var doneFunction = function(results) {
-        $rootScope.$apply(function() {
-          deferred.resolve(results);
-        });
-      };
-
-      var failFunction = function(result) {
-        $log.warn('Card failed: ' + JSON.stringify(result));
-      };
-
-      serverPromise.then(queryFunction).then(doneFunction, failFunction);
-
-      return deferred.promise;
+      db = pouchDB(dbName);
     };
 
     //
@@ -104,115 +22,140 @@ angular.module('kanbanApp').service('dbService', ['$log', '$q', '$rootScope',
     //
 
     // Find one object
-    var getObject = function(serverPromise, collection, id) {
-      var query = function(s) {
-        return s[collection].get(id);
-      };
-
-      return dbRun(serverPromise, query);
+    var getObject = function(collection, id) {
+      $log.debug("getObject: " + collection + ", " + id);
+      return db.get(id)
+        .catch(function(err) {
+          if (err.status !== 404) {
+            throw(err);
+          }
+         });
     };
 
     // Get all objects
-    var getAllObjects = function(serverPromise, collection) {
-      var query = function(s) {
-        return s[collection].query().all().execute();
-      };
+    var getAllObjects = function(collection) {
+      $log.debug("getAllObjects: " + collection);
 
-      return dbRun(serverPromise, query);
+      return db.allDocs({
+        include_docs: true,
+        attachments: true
+      }).then(function (result) {
+        $log.debug("getAllObjects results: " + JSON.stringify(result));
+        var docs = _.chain(result.rows)
+          .pluck('doc')
+          .filter(function(n) {
+            return n.type === collection;
+          })
+          .value();
+
+        $log.debug("getAllObjects filtered: " + JSON.stringify(docs));
+        return docs;
+      })
     };
 
     // Update or insert object
-    var updateObject = function(serverPromise, collection, obj) {
-      var query = function(s) {
-        return s[collection].update(obj);
-      };
-
-      return dbRun(serverPromise, query);
+    var updateObject = function(collection, obj) {
+      $log.debug("updateObject: " + collection + ", " + JSON.stringify(obj));
+      obj.type = collection;
+      return db.put(obj);
     };
 
     // Delete object
-    var removeObject = function(serverPromise, collection, id) {
-      var query = function(s) {
-        return s[collection].remove(id);
-      };
-
-      return dbRun(serverPromise, query);
+    var removeObject = function(collection, id) {
+      $log.debug("removeObject: " + collection + ", " + id);
+      return db.remove(id);
     };
 
     //
     // Project API
     //
     var getProject = function(id) {
-      return getObject(selectGlobal(), 'project', id);
+      selectGlobal();
+      return getObject('project', id);
     };
 
     var getAllProjects = function() {
-      return getAllObjects(selectGlobal(), 'project');
+      selectGlobal();
+      return getAllObjects('project');
     };
 
     var updateProject = function(obj) {
-      return updateObject(selectGlobal(), 'project', obj);
+      selectGlobal();
+      return updateObject('project', obj);
     };
 
     var removeProject = function(id) {
-      return removeObject(selectGlobal(), 'project', id);
+      selectGlobal();
+      return removeObject('project', id);
     };
 
     //
     // Preference API
     //
     var getPreference = function(id) {
-      return getObject(selectGlobal(), 'preference', id);
+      selectGlobal();
+      return getObject('preference', id);
     };
 
     var getAllPreferences = function() {
-      return getAllObjects(selectGlobal(), 'preference');
+      selectGlobal();
+      return getAllObjects('preference');
     };
 
     var updatePreference = function(obj) {
-      return updateObject(selectGlobal(), 'preference', obj);
+      selectGlobal();
+      return updateObject('preference', obj);
     };
 
     var removePreference = function(id) {
-      return removeObject(selectGlobal(), 'preference', id);
+      selectGlobal();
+      return removeObject('preference', id);
     };
 
     //
     // Settings API
     //
     var getSetting = function(project, id) {
-      return getObject(selectProject(project.dbname), 'setting', id);
+      selectProject(project.dbname);
+      return getObject('setting', id);
     };
 
     var getAllSettings = function(project) {
-      return getAllObjects(selectProject(project.dbname), 'setting');
+      selectProject(project.dbname);
+      return getAllObjects('setting');
     };
 
     var updateSetting = function(project, obj) {
-      return updateObject(selectProject(project.dbname), 'setting', obj);
+      selectProject(project.dbname);
+      return updateObject('setting', obj);
     };
 
     var removeSetting = function(project, id) {
-      return removeObject(selectProject(project.dbname), 'setting', id);
+      selectProject(project.dbname);
+      return removeObject('setting', id);
     };
 
     //
     // Card API
     //
     var getCard = function(project, id) {
-      return getObject(selectProject(project.dbname), 'card', id);
+      selectProject(project.dbname);
+      return getObject('card', id);
     };
 
     var getAllCards = function(project) {
-      return getAllObjects(selectProject(project.dbname), 'card');
+      selectProject(project.dbname);
+      return getAllObjects('card');
     };
 
     var updateCard = function(project, obj) {
-      return updateObject(selectProject(project.dbname), 'card', obj);
+      selectProject(project.dbname);
+      return updateObject('card', obj);
     };
 
     var removeCard = function(project, id) {
-      return removeObject(selectProject(project.dbname), 'card', id);
+      selectProject(project.dbname);
+      return removeObject('card', id);
     };
 
     return {

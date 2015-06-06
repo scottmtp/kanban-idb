@@ -7,7 +7,7 @@ angular.module('kanbanApp').controller('kanbanCtrl', ['$scope', '$log', '$q', '$
   var editCardImpl = function(aCard) {
     $log.debug('editCard');
     var modalInstance;
-    
+
     modalInstance = $modal.open({
       templateUrl: 'views/cardDetail.html',
       controller: 'CardDetailCtrl',
@@ -20,17 +20,18 @@ angular.module('kanbanApp').controller('kanbanCtrl', ['$scope', '$log', '$q', '$
         }
       }
     });
-    
+
     modalInstance.result
       .then(function(card) { return kanbanService.saveCard($scope.project, card); })
       .then(function() { return kanbanService.getCards($scope.project); })
-      .then($scope.updateCards);
+      .then($scope.updateCards)
+      .catch(error);
   };
-  
+
   var editProjectImpl = function(aProject) {
     $log.debug('editProject');
     var modalInstance;
-    
+
     modalInstance = $modal.open({
       templateUrl: 'views/projectDetail.html',
       controller: 'ProjectDetailCtrl',
@@ -40,31 +41,40 @@ angular.module('kanbanApp').controller('kanbanCtrl', ['$scope', '$log', '$q', '$
         }
       }
     });
-    
+
     modalInstance.result
       .then(function(project) {
-        // TODO: workflow moved from project to settings, we should remove this check in a future release.
-        if (!!project.workflow) {
-          delete project.workflow;
-        }
-        
         $scope.project = project;
+        $scope.defaultProjectPref.projectId = project._id;
         return projectService.saveProject(project);
       })
-      .then(function() { return preferenceService.setDefaultProjectId($scope.project.id); })
-      .then(function() { return projectService.getAllProjects(); })
+      .then(function(resultOfSave) {
+        $scope.project._rev = resultOfSave.rev;
+      })
+      .then(function() {
+        return preferenceService.setPreference($scope.defaultProjectPref);
+      })
+      .then(function(resultOfSave) {
+        $scope.defaultProjectPref._rev = resultOfSave.rev;
+      })
+      .then(function() {
+        return projectService.getAllProjects();
+      })
       .then($scope.updateProjectList)
-      .then(function() { return kanbanService.getCards($scope.project); })
-      .then($scope.updateCards);
+      .then(function() {
+        return kanbanService.getCards($scope.project);
+      })
+      .then($scope.updateCards)
+      .catch(error);
   };
-  
+
   $scope.updateProject = function(result) {
-    $log.debug('updateProject');
+    $log.debug('updateProject: ' + JSON.stringify(result));
     $scope.project = result;
   };
-  
+
   $scope.updateSettings = function(result) {
-    $log.debug('updateSettings');
+    $log.debug('updateSettings: ' + JSON.stringify(result));
     if (!!result) {
       $scope.projectWorkflow = result.steps;
     } else {
@@ -72,12 +82,12 @@ angular.module('kanbanApp').controller('kanbanCtrl', ['$scope', '$log', '$q', '$
       return settingsService.setWorkflowSetting($scope.project, $scope.projectWorkflow);
     }
   };
-  
+
   $scope.updateProjectList = function(results) {
-    $log.debug('updateProjectList');
+    $log.debug('updateProjectList: ' + JSON.stringify(results));
     $scope.projectList = results;
   };
-  
+
   $scope.updateCards = function(results) {
     $log.debug('updateCards');
     $scope.listCards = _.chain(results).filter(function(c) {return c.status !== 'Archive';}).sortBy('name').value();
@@ -87,13 +97,13 @@ angular.module('kanbanApp').controller('kanbanCtrl', ['$scope', '$log', '$q', '$
         $scope.kanbanCards[workflow] = [];
       }
     });
-    
+
     $scope.archiveCards = $scope.kanbanCards.Archive;
     if (!$scope.archiveCards) {
       $scope.archiveCards = [];
     }
   };
-  
+
   $scope.sortableOptions = {
     placeholder: '.card',
     connectWith: '.cardHolder',
@@ -106,10 +116,11 @@ angular.module('kanbanApp').controller('kanbanCtrl', ['$scope', '$log', '$q', '$
       promises = kanbanService.saveCards($scope.project, $scope.kanbanCards[endWorkflow]);
       $q.all(promises)
         .then(function() { return kanbanService.getCards($scope.project); })
-        .then($scope.updateCards);
+        .then($scope.updateCards)
+        .catch(error);
     }
   };
-  
+
   $scope.toggleCard = function(event) {
     if ($(event.target).hasClass('card')) {
       $(event.target).find('span.cardStory').toggleClass('hidden');
@@ -117,26 +128,30 @@ angular.module('kanbanApp').controller('kanbanCtrl', ['$scope', '$log', '$q', '$
       $(event.target).parent().parent().find('span.cardStory').toggleClass('hidden');
     }
   };
-  
+
   $scope.createProject = function() {
     var modalProject = projectService.getProjectTemplate();
     editProjectImpl(modalProject);
   };
-  
+
   $scope.editProject = function(project) {
     var modalProject = angular.copy(project);
     editProjectImpl(modalProject);
   };
-  
+
   $scope.selectProject = function(project) {
-    if (project.id !== $scope.project.id) {
+    if (project._id !== $scope.project._id) {
       $scope.project = project;
-      preferenceService.setDefaultProjectId($scope.project.id)
-        .then(function() { return kanbanService.getCards($scope.project); })
-        .then($scope.updateCards);
+      $scope.defaultProjectPref.projectId = project._id;
+      preferenceService.setPreference($scope.defaultProjectPref)
+        .then(function() {
+          return kanbanService.getCards($scope.project);
+        })
+        .then($scope.updateCards)
+        .catch(error);
     }
   };
-  
+
   $scope.actions = function(aCard) {
     $log.debug('actions');
     var modalInstance;
@@ -149,7 +164,7 @@ angular.module('kanbanApp').controller('kanbanCtrl', ['$scope', '$log', '$q', '$
         }
       }
     });
-    
+
     modalInstance.result
       .then(function(result) {
         $log.debug('action outcome: ' + result.outcome);
@@ -159,44 +174,70 @@ angular.module('kanbanApp').controller('kanbanCtrl', ['$scope', '$log', '$q', '$
           if (result.outcome === 'archive') {
             result.card.status = 'Archive';
           }
-          
+
           return kanbanService.saveCard($scope.project, result.card); }
         })
-      .then(function() { return kanbanService.getCards($scope.project); })
-      .then($scope.updateCards);
-      
+      .then(function() {
+        return kanbanService.getCards($scope.project);
+      })
+      .then($scope.updateCards)
+      .catch(error);
   };
-  
+
   $scope.editCard = function(card) {
     var modalCard = angular.copy(card);
     editCardImpl(modalCard);
   };
-  
+
   $scope.createCard = function() {
     var modalCard = kanbanService.getCardTemplate('Backlog');
     editCardImpl(modalCard);
   };
-    
+
+  function error(err) {
+    $log.error(err);
+  }
+
   // update project list
-  projectService.getAllProjects().then($scope.updateProjectList);
-  
+  projectService.getAllProjects()
+    .then($scope.updateProjectList)
+    .catch(error);
+
   // get default project, or create new one if no projects exist
-  preferenceService.getDefaultProjectId()
+  preferenceService.getDefaultProjectPref()
     .then(
       function(results) {
+        var projectTemplate, defaultProjectPrefTemplate;
+        $log.debug("getDefaultProjectId: " + JSON.stringify(results));
+
         if (!!results) {
-          $scope.defaultProjectId = results.id;
+          $scope.defaultProjectPref = results;
         } else {
-          var projectTemplate = projectService.getProjectTemplate();
-          $scope.defaultProjectId = projectTemplate.id;
-          return projectService.saveProject(projectTemplate);
+          projectTemplate = projectService.getProjectTemplate();
+          defaultProjectPrefTemplate = preferenceService.getDefaultProjectPrefTemplate();
+          defaultProjectPrefTemplate.projectId = projectTemplate._id;
+          $scope.defaultProjectPref = defaultProjectPrefTemplate;
+
+          return projectService.saveProject(projectTemplate)
+            .then(function() {
+              return preferenceService.setPreference($scope.defaultProjectPref);
+            })
+            .then(function(resultOfSave) {
+              $scope.defaultProjectPref._rev = resultOfSave.rev;
+            });
         }
       })
-    .then( function() { return preferenceService.setDefaultProjectId($scope.defaultProjectId); })
-    .then( function() { return projectService.getProject($scope.defaultProjectId); })
-    .then( $scope.updateProject )
-    .then( function() { return settingsService.getWorkflowSetting($scope.project); })
-    .then( $scope.updateSettings )
-    .then( function() { return kanbanService.getCards($scope.project); })
-    .then( $scope.updateCards );
+    .then(function() {
+      return projectService.getProject($scope.defaultProjectPref.projectId);
+    })
+    .then($scope.updateProject)
+    .then( function() {
+      return settingsService.getWorkflowSetting($scope.project);
+    })
+    .then($scope.updateSettings)
+    .then(function() {
+      return kanbanService.getCards($scope.project);
+    })
+    .then($scope.updateCards)
+    .catch(error);
 }]);
