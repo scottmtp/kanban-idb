@@ -4,36 +4,36 @@ angular.module('kanbanApp').service('kanbanService', ['uuid4', 'dbService', func
   var getCardTemplate = function(initialStatus) {
     var templateTask = getTaskTemplate();
     var templateCard = {
-      'id': uuid4.generate(),
+      '_id': uuid4.generate(),
       'ordinal': 0,
       'status': initialStatus,
       'points': 0,
       'tasks': [],
       'newTask': templateTask
     };
-    
+
     return templateCard;
   };
-  
+
   var setStatusAndOrdinal = function(project, cardList, status) {
     for (var i = 0; i < cardList.length; i++) {
       cardList[i].ordinal = i;
       cardList[i].status = status;
     }
   };
-  
+
   var getTaskTemplate = function() {
     return {'name': '', 'status': 'Open'};
   };
-  
+
   var getCards = function(project) {
     return dbService.getAllCards(project);
   };
-  
+
   var saveCard = function(project, card) {
     return dbService.updateCard(project, card);
   };
-  
+
   var saveCards = function(project, cardList) {
     var promises = [];
     for (var i = 0; i < cardList.length; i++) {
@@ -41,11 +41,11 @@ angular.module('kanbanApp').service('kanbanService', ['uuid4', 'dbService', func
     }
     return promises;
   };
-  
+
   var deleteCard = function(project, card) {
     return dbService.removeCard(project, card.id);
   };
-  
+
   return {
     getCardTemplate: getCardTemplate,
     getTaskTemplate: getTaskTemplate,
@@ -55,5 +55,5 @@ angular.module('kanbanApp').service('kanbanService', ['uuid4', 'dbService', func
     deleteCard: deleteCard,
     setStatusAndOrdinal: setStatusAndOrdinal
   };
-  
+
 }]);
