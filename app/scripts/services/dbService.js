@@ -1,8 +1,8 @@
 /*global _ */
 'use strict';
 
-angular.module('kanbanApp').service('dbService', ['$log', '$q', '$rootScope', 'pouchDB', 'pouchDBDecorators',
-  function dbService($log, $q, $rootScope, pouchDB, pouchDBDecorators) {
+angular.module('kanbanApp').service('dbService', ['$log', '$q', '$rootScope', 'pouchDB',
+  function dbService($log, $q, $rootScope, pouchDB) {
     var db;
 
     // Use the global database
@@ -23,24 +23,24 @@ angular.module('kanbanApp').service('dbService', ['$log', '$q', '$rootScope', 'p
 
     // Find one object
     var getObject = function(collection, id) {
-      $log.debug("getObject: " + collection + ", " + id);
+      $log.debug('getObject: ' + collection + ', ' + id);
       return db.get(id)
         .catch(function(err) {
           if (err.status !== 404) {
             throw(err);
           }
-         });
+        });
     };
 
     // Get all objects
     var getAllObjects = function(collection) {
-      $log.debug("getAllObjects: " + collection);
+      $log.debug('getAllObjects: ' + collection);
 
       return db.allDocs({
         include_docs: true,
         attachments: true
       }).then(function (result) {
-        $log.debug("getAllObjects results: " + JSON.stringify(result));
+        $log.debug('getAllObjects results: ' + JSON.stringify(result));
         var docs = _.chain(result.rows)
           .pluck('doc')
           .filter(function(n) {
@@ -48,21 +48,21 @@ angular.module('kanbanApp').service('dbService', ['$log', '$q', '$rootScope', 'p
           })
           .value();
 
-        $log.debug("getAllObjects filtered: " + JSON.stringify(docs));
+        $log.debug('getAllObjects filtered: ' + JSON.stringify(docs));
         return docs;
-      })
+      });
     };
 
     // Update or insert object
     var updateObject = function(collection, obj) {
-      $log.debug("updateObject: " + collection + ", " + JSON.stringify(obj));
+      $log.debug('updateObject: ' + collection + ', ' + JSON.stringify(obj));
       obj.type = collection;
       return db.put(obj);
     };
 
     // Delete object
     var removeObject = function(collection, id) {
-      $log.debug("removeObject: " + collection + ", " + id);
+      $log.debug('removeObject: ' + collection + ', ' + id);
       return db.remove(id);
     };
 

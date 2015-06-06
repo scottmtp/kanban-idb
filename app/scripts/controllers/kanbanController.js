@@ -175,8 +175,9 @@ angular.module('kanbanApp').controller('kanbanCtrl', ['$scope', '$log', '$q', '$
             result.card.status = 'Archive';
           }
 
-          return kanbanService.saveCard($scope.project, result.card); }
-        })
+          return kanbanService.saveCard($scope.project, result.card);
+        }
+      })
       .then(function() {
         return kanbanService.getCards($scope.project);
       })
@@ -208,7 +209,7 @@ angular.module('kanbanApp').controller('kanbanCtrl', ['$scope', '$log', '$q', '$
     .then(
       function(results) {
         var projectTemplate, defaultProjectPrefTemplate;
-        $log.debug("getDefaultProjectId: " + JSON.stringify(results));
+        $log.debug('getDefaultProjectId: ' + JSON.stringify(results));
 
         if (!!results) {
           $scope.defaultProjectPref = results;
