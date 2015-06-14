@@ -1,7 +1,10 @@
 {
   "name": "kanban",
   "version": "0.0.0",
-  "dependencies": {},
+  "dependencies": {
+    "browser-stdout": "1.2.0",
+    "pouch-replicate-webrtc": "/Users/scott/Dropbox/Projects/pouch-replicate-webrtc"
+  },
   "devDependencies": {
     "grunt": "~0.4.4",
     "grunt-autoprefixer": "~3.0.1",
@@ -39,6 +42,7 @@
     "node": ">=0.10.25"
   },
   "scripts": {
+    "browserify": "browserify -r pouch-replicate-webrtc > app/scripts/bundle.js",
     "test": "grunt test"
   }
 }

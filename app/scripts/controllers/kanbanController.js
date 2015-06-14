@@ -199,6 +199,16 @@ angular.module('kanbanApp').controller('kanbanCtrl', ['$scope', '$log', '$q', '$
     $log.error(err);
   }
 
+  $scope.replicate = function(project) {
+    kanbanService.replicate(project)
+      .then(function(result) {
+        $log.debug("replication done: " + JSON.stringify(result));
+      })
+      .catch(function(error) {
+        $log.debug("error: " + JSON.stringify(error));
+      });
+  };
+
   // update project list
   projectService.getAllProjects()
     .then($scope.updateProjectList)
