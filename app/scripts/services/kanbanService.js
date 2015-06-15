@@ -43,7 +43,7 @@ angular.module('kanbanApp').service('kanbanService', ['uuid4', 'dbService', func
   };
 
   var deleteCard = function(project, card) {
-    return dbService.removeCard(project, card.id);
+    return dbService.removeCard(project, card._id);
   };
 
   var replicate = function(project) {

@@ -66,7 +66,9 @@ angular.module('kanbanApp').service('dbService', ['$log', '$q', '$rootScope', 'p
     // Delete object
     var removeObject = function(collection, id) {
       $log.debug('removeObject: ' + collection + ', ' + id);
-      return db.remove(id);
+      return db.get(id).then(function(doc) {
+        return db.remove(doc);
+      });
     };
 
     //
