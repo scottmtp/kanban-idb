@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "dependencies": {
     "browser-stdout": "1.2.0",
-    "pouch-replicate-webrtc": "/Users/scott/Dropbox/Projects/pouch-replicate-webrtc"
+    "pouch-replicate-webrtc": "scottmtp/pouch-replicate-webrtc"
   },
   "devDependencies": {
     "grunt": "~0.4.4",
