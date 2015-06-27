@@ -4,9 +4,6 @@
 angular.module('kanbanApp').service('dbService', ['$log', '$q', '$rootScope', 'pouchDB',
   function dbService($log, $q, $rootScope, pouchDB) {
     var db;
-    PouchDB.debug.enable('*');
-    var PouchReplicator = require('pouch-replicate-webrtc');
-    var replicator;
 
     // Use the global database
     var selectGlobal = function() {
@@ -69,21 +66,6 @@ angular.module('kanbanApp').service('dbService', ['$log', '$q', '$rootScope', 'p
       return db.get(id).then(function(doc) {
         return db.remove(doc);
       });
-    };
-
-    //
-    // Replication API
-    //
-    var join = function(project) {
-      $log.debug('starting join: ' + JSON.stringify(project));
-      var replDb = pouchDB(project.dbname);
-      replicator = new PouchReplicator('http://localhost:3000/', {room: 'kanban'}, replDb);
-      return replicator.join();
-    }
-
-    var replicate = function(project) {
-      $log.debug('starting replicate: ' + JSON.stringify(project));
-      return replicator.replicate();
     };
 
     //
@@ -194,9 +176,7 @@ angular.module('kanbanApp').service('dbService', ['$log', '$q', '$rootScope', 'p
       getCard: getCard,
       getAllCards: getAllCards,
       updateCard: updateCard,
-      removeCard: removeCard,
-      join: join,
-      replicate: replicate
+      removeCard: removeCard
     };
   }
 ]);

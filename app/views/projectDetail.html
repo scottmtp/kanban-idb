@@ -8,15 +8,33 @@
   <form name="projectForm" class="form-horizontal" role="form">
     <div class="projectDetails">
       <div class="form-group">
-        <label for="project.name" class="col-sm-2 control-label">Name:</label>
-        <div class="col-sm-8">
-          <input name="project.name" type='text' ng-model="project.name" class="form-control">
+
+        <div class="row">
+          <label for="project.name" class="col-sm-2 control-label">Name:</label>
+          <div class="col-sm-8">
+            <input id="project.name" name="project.name" type='text' ng-model="project.name" class="form-control">
+          </div>
         </div>
+
+        <div class="row">
+          <label for="project.signaller" class="col-sm-2 control-label">Signaller URL:</label>
+          <div class="col-sm-8">
+            <input id="project.signaller" name="project.signaller" type='text' ng-model="project.signaller" class="form-control">
+          </div>
+        </div>
+
+        <div class="row">
+          <label for="project.room" class="col-sm-2 control-label">Room:</label>
+          <div class="col-sm-8">
+            <input id="project.room" name="project.room" type='text' ng-model="project.room" class="form-control">
+          </div>
+        </div>
+
       </div>
     </div>
   </form>
 </div>
-  
+
 <div class='modal-footer'>
   <button class="btn btn-danger" ng-click="cancel()">Cancel</button> <button class="btn btn-primary" ng-click="save(project)">Save</button>
 </div>

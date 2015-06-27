@@ -46,13 +46,6 @@ angular.module('kanbanApp').service('kanbanService', ['uuid4', 'dbService', func
     return dbService.removeCard(project, card._id);
   };
 
-  var replicate = function(project) {
-    return dbService.join(project)
-      .then(function() {
-        return dbService.replicate(project)
-      });
-  };
-
   return {
     getCardTemplate: getCardTemplate,
     getTaskTemplate: getTaskTemplate,
@@ -60,8 +53,7 @@ angular.module('kanbanApp').service('kanbanService', ['uuid4', 'dbService', func
     saveCard: saveCard,
     saveCards: saveCards,
     deleteCard: deleteCard,
-    setStatusAndOrdinal: setStatusAndOrdinal,
-    replicate: replicate
+    setStatusAndOrdinal: setStatusAndOrdinal
   };
 
 }]);
