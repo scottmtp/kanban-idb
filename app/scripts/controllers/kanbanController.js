@@ -148,13 +148,18 @@ angular.module('kanbanApp').controller('kanbanCtrl',
   $scope.selectProject = function(project) {
     if (project._id !== $scope.project._id) {
       $scope.project = project;
-      $scope.defaultProjectPref.projectId = project._id;
-      preferenceService.setPreference($scope.defaultProjectPref)
-        .then(function() {
-          return kanbanService.getCards($scope.project);
-        })
-        .then($scope.updateCards)
-        .catch(error);
+
+      preferenceService.getDefaultProjectPref()
+      .then(function(results) {
+        $scope.defaultProjectPref = results;
+        $scope.defaultProjectPref.projectId = $scope.project._id;
+        return preferenceService.setPreference($scope.defaultProjectPref)
+      })
+      .then(function() {
+        return kanbanService.getCards($scope.project);
+      })
+      .then($scope.updateCards)
+      .catch(error);
     }
   };
 
