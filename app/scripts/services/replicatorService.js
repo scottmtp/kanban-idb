@@ -8,10 +8,12 @@ angular.module('kanbanApp').service('replicatorService', ['$log', '$q', '$rootSc
     //
     // Replication API
     //
-    var join = function(project) {
+    var join = function(project, receive) {
       $log.debug('starting join: ' + JSON.stringify(project));
       var replDb = pouchDB(project.dbname);
-      replicator = new PouchReplicator(project.signaller, {room: project.room}, replDb, {batch_size: 1});
+      replicator = new PouchReplicator('repl', project.signaller, {room: project.room}, replDb, {batch_size: 1});
+      replicator.on('load', receive);
+      
       return replicator.join();
     };
 
