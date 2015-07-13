@@ -9,8 +9,7 @@ angular.module('kanbanApp', [
   'ui.utils',
   'dialogs.main',
   'uuid4',
-  'ui.sortable',
-  'pouchdb'
+  'ui.sortable'
 ])
   .config(function($routeProvider) {
     $routeProvider

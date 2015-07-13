@@ -1,7 +1,8 @@
 'use strict';
 
-angular.module('kanbanApp').service('replicatorService', ['$log', '$q', '$rootScope', 'pouchDB',
-  function replicatorService($log, $q, $rootScope, pouchDB) {
+angular.module('kanbanApp').service('replicatorService', ['$log', '$q', '$rootScope',
+  function replicatorService($log, $q, $rootScope) {
+    var pouchDB = require('pouchdb');
     var PouchReplicator = require('pouch-replicate-webrtc');
     var replicator;
 
@@ -11,9 +12,12 @@ angular.module('kanbanApp').service('replicatorService', ['$log', '$q', '$rootSc
     var join = function(project, receive) {
       $log.debug('starting join: ' + JSON.stringify(project));
       var replDb = pouchDB(project.dbname);
-      replicator = new PouchReplicator('repl', project.signaller, {room: project.room}, replDb, {batch_size: 1});
-      replicator.on('load', receive);
-      
+      var token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJyb29tcyI6WyJwbHV0byI'
+        + 'sInZlbnVzIiwianVwaXRlciJdfQ.uMMkNdDdIXolau6UrDlmLT2e7JkMumJze2vvBNnNTX0';
+        
+      replicator = new PouchReplicator('repl', project.signaller, {room: project.room, endpoints: ['/ws?token=' + token]}, replDb, {batch_size: 1});
+      replicator.on('endreplicate', receive);
+
       return replicator.join();
     };
 

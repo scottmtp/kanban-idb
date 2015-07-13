@@ -1,10 +1,12 @@
 /*global _ */
 'use strict';
 
-angular.module('kanbanApp').service('dbService', ['$log', '$q', '$rootScope', 'pouchDB',
-  function dbService($log, $q, $rootScope, pouchDB) {
+angular.module('kanbanApp').service('dbService', ['$log', '$q', '$rootScope',
+  function dbService($log, $q, $rootScope) {
     var db;
-
+    
+    var pouchDB = require('pouchdb');
+    
     // Use the global database
     var selectGlobal = function() {
       $log.info('Switching to global database.');
