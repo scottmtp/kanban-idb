@@ -12,10 +12,18 @@ angular.module('kanbanApp').service('replicatorService', ['$log', '$q', '$rootSc
     var join = function(project, receive) {
       $log.debug('starting join: ' + JSON.stringify(project));
       var replDb = pouchDB(project.dbname);
-      var token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJyb29tcyI6WyJwbHV0byI'
-        + 'sInZlbnVzIiwianVwaXRlciJdfQ.uMMkNdDdIXolau6UrDlmLT2e7JkMumJze2vvBNnNTX0';
-        
-      replicator = new PouchReplicator('repl', project.signaller, {room: project.room, endpoints: ['/ws?token=' + token]}, replDb, {batch_size: 1});
+
+      // for testing with rtc-switch-jwt: { rooms: ['pluto', 'venus', 'jupiter'] }
+      // var token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJyb29tcyI6WyJwbHV0byI'
+      //   + 'sInZlbnVzIiwianVwaXRlciJdfQ.uMMkNdDdIXolau6UrDlmLT2e7JkMumJze2vvBNnNTX0';
+      //
+      // replicator = new PouchReplicator('repl', project.signaller, {room: project.room,
+      //     endpoints: ['/ws?token=' + token]}, replDb, {batch_size: 1});
+
+      // for testing with a vanilla rtc-switch
+      replicator = new PouchReplicator('repl', project.signaller, {room: project.room,
+          endpoints: ['/']}, replDb, {batch_size: 1});
+
       replicator.on('endpeerreplicate', receive);
 
       return replicator.join();
