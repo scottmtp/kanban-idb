@@ -16,7 +16,7 @@ angular.module('kanbanApp').service('replicatorService', ['$log', '$q', '$rootSc
         + 'sInZlbnVzIiwianVwaXRlciJdfQ.uMMkNdDdIXolau6UrDlmLT2e7JkMumJze2vvBNnNTX0';
         
       replicator = new PouchReplicator('repl', project.signaller, {room: project.room, endpoints: ['/ws?token=' + token]}, replDb, {batch_size: 1});
-      replicator.on('endreplicate', receive);
+      replicator.on('endpeerreplicate', receive);
 
       return replicator.join();
     };
