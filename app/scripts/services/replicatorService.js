@@ -21,12 +21,22 @@ angular.module('kanbanApp').service('replicatorService', ['$log', '$q', '$rootSc
       //     endpoints: ['/ws?token=' + token]}, replDb, {batch_size: 1});
 
       // for testing with a vanilla rtc-switch
-      replicator = new PouchReplicator('repl', project.signaller, {room: project.room,
-          endpoints: ['/']}, replDb, {batch_size: 1});
+      replicator = new PouchReplicator('repl', replDb, {batch_size: 1});
+
+      var deferred = $q.defer();
+      quickconnect(project.signaller, {room: project.room, endpoints: ['/']})
+      .createDataChannel('kanban')
+      .on('channel:opened:kanban', function(id, dc) {
+        replicator.addPeer(id, dc);
+        deferred.resolve();
+      })
+      .on('channel:closed:kanban', function(id, dc) {
+        replicator.removePeer(id);
+      })
 
       replicator.on('endpeerreplicate', receive);
 
-      return replicator.join();
+      return deferred.promise;
     };
 
     var replicate = function(project) {
