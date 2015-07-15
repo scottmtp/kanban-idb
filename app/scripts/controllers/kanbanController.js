@@ -2,9 +2,15 @@
 /*global _ */
 'use strict';
 
-angular.module('kanbanApp').controller('kanbanCtrl', ['$scope', '$log', '$q', '$modal', 'preferenceService', 'projectService', 'kanbanService', 'settingsService', function($scope, $log, $q, $modal, preferenceService, projectService, kanbanService, settingsService) {
+angular.module('kanbanApp').controller('kanbanCtrl',
+  ['$scope', '$log', '$q', '$modal', '$timeout', '$interval', 'preferenceService', 'projectService', 'kanbanService', 'settingsService', 'replicatorService',
+   function($scope, $log, $q, $modal, $timeout, $interval, preferenceService, projectService, kanbanService, settingsService, replicatorService) {
 
-  var editCardImpl = function(aCard) {
+  function error(err) {
+    $log.error(err);
+  }
+
+  var doEditCard = function(aCard) {
     $log.debug('editCard');
     var modalInstance;
 
@@ -25,10 +31,11 @@ angular.module('kanbanApp').controller('kanbanCtrl', ['$scope', '$log', '$q', '$
       .then(function(card) { return kanbanService.saveCard($scope.project, card); })
       .then(function() { return kanbanService.getCards($scope.project); })
       .then($scope.updateCards)
+      .then(doReplicate)
       .catch(error);
   };
 
-  var editProjectImpl = function(aProject) {
+  var doEditProject = function(aProject) {
     $log.debug('editProject');
     var modalInstance;
 
@@ -65,7 +72,29 @@ angular.module('kanbanApp').controller('kanbanCtrl', ['$scope', '$log', '$q', '$
         return kanbanService.getCards($scope.project);
       })
       .then($scope.updateCards)
+      .then(doReplicatorJoin)
+      .then(doReplicate)
       .catch(error);
+  };
+
+  var onReplicatorUpdates = function() {
+    return kanbanService.getCards($scope.project).then($scope.updateCards);
+  };
+  
+  var doReplicatorJoin = function() {
+    if ($scope.project.signaller) {
+      return replicatorService.join($scope.project, onReplicatorUpdates);
+    }
+
+    return Promise.resolve();
+  };
+
+  var doReplicate = function() {
+    if ($scope.project.signaller) {
+      return replicatorService.replicate($scope.project);
+    }
+
+    return Promise.resolve();
   };
 
   $scope.updateProject = function(result) {
@@ -117,6 +146,7 @@ angular.module('kanbanApp').controller('kanbanCtrl', ['$scope', '$log', '$q', '$
       $q.all(promises)
         .then(function() { return kanbanService.getCards($scope.project); })
         .then($scope.updateCards)
+        .then(doReplicate)
         .catch(error);
     }
   };
@@ -131,24 +161,31 @@ angular.module('kanbanApp').controller('kanbanCtrl', ['$scope', '$log', '$q', '$
 
   $scope.createProject = function() {
     var modalProject = projectService.getProjectTemplate();
-    editProjectImpl(modalProject);
+    doEditProject(modalProject);
   };
 
   $scope.editProject = function(project) {
     var modalProject = angular.copy(project);
-    editProjectImpl(modalProject);
+    doEditProject(modalProject);
   };
 
   $scope.selectProject = function(project) {
     if (project._id !== $scope.project._id) {
       $scope.project = project;
-      $scope.defaultProjectPref.projectId = project._id;
-      preferenceService.setPreference($scope.defaultProjectPref)
-        .then(function() {
-          return kanbanService.getCards($scope.project);
-        })
-        .then($scope.updateCards)
-        .catch(error);
+
+      preferenceService.getDefaultProjectPref()
+      .then(function(results) {
+        $scope.defaultProjectPref = results;
+        $scope.defaultProjectPref.projectId = $scope.project._id;
+        return preferenceService.setPreference($scope.defaultProjectPref);
+      })
+      .then(function() {
+        return kanbanService.getCards($scope.project);
+      })
+      .then($scope.updateCards)
+      .then(doReplicatorJoin)
+      .then(doReplicate)
+      .catch(error);
     }
   };
 
@@ -182,22 +219,19 @@ angular.module('kanbanApp').controller('kanbanCtrl', ['$scope', '$log', '$q', '$
         return kanbanService.getCards($scope.project);
       })
       .then($scope.updateCards)
+      .then(doReplicate)
       .catch(error);
   };
 
   $scope.editCard = function(card) {
     var modalCard = angular.copy(card);
-    editCardImpl(modalCard);
+    doEditCard(modalCard);
   };
 
   $scope.createCard = function() {
     var modalCard = kanbanService.getCardTemplate('Backlog');
-    editCardImpl(modalCard);
+    doEditCard(modalCard);
   };
-
-  function error(err) {
-    $log.error(err);
-  }
 
   // update project list
   projectService.getAllProjects()
@@ -240,5 +274,15 @@ angular.module('kanbanApp').controller('kanbanCtrl', ['$scope', '$log', '$q', '$
       return kanbanService.getCards($scope.project);
     })
     .then($scope.updateCards)
+    .then(doReplicatorJoin)
+    .then(doReplicate)
     .catch(error);
+
+  $scope.connectedPeers = 0;
+  var updateConnectedPeers = function() {
+    $scope.connectedPeers = replicatorService.connectedPeers();
+  };
+
+  $interval(updateConnectedPeers, 2000);
+
 }]);

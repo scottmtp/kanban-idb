@@ -1,10 +1,12 @@
 /*global _ */
 'use strict';
 
-angular.module('kanbanApp').service('dbService', ['$log', '$q', '$rootScope', 'pouchDB',
-  function dbService($log, $q, $rootScope, pouchDB) {
+angular.module('kanbanApp').service('dbService', ['$log', '$q', '$rootScope',
+  function dbService($log, $q, $rootScope) {
     var db;
-
+    
+    var pouchDB = require('pouchdb');
+    
     // Use the global database
     var selectGlobal = function() {
       $log.info('Switching to global database.');
@@ -63,7 +65,9 @@ angular.module('kanbanApp').service('dbService', ['$log', '$q', '$rootScope', 'p
     // Delete object
     var removeObject = function(collection, id) {
       $log.debug('removeObject: ' + collection + ', ' + id);
-      return db.remove(id);
+      return db.get(id).then(function(doc) {
+        return db.remove(doc);
+      });
     };
 
     //
